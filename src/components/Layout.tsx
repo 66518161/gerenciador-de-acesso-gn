@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
-  Bell,
+  Briefcase,
   ChevronDown,
   DatabaseZap,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   Moon,
   RefreshCw,
   ServerCog,
   Settings,
   Sun,
-  UserRound,
+  User,
   UsersRound,
   X,
 } from 'lucide-react'
@@ -51,7 +52,7 @@ export default function Layout() {
   const navigate = useNavigate()
   const { toast } = useToast()
   const { tema, alternarTema } = useTheme()
-  const { usuarioLogado, estatisticas, sair, recarregarDemonstracao } = useAccess()
+  const { usuarioLogado, perfis, sair, recarregarDemonstracao } = useAccess()
   const [drawerAberto, setDrawerAberto] = useState(false)
 
   useEffect(() => {
@@ -129,32 +130,6 @@ export default function Layout() {
               <RefreshCw size={16} />
             </button>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="sidebar-user glass-surface">
-                <span className="avatar avatar--orange">{iniciais(usuarioLogado.nome)}</span>
-                <span className="sidebar-user__copy">
-                  <strong>{usuarioLogado.nome}</strong>
-                  <small>{usuarioLogado.departamento}</small>
-                </span>
-                <ChevronDown size={15} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              side="top"
-              align="start"
-              className="glass-surface dropdown-panel sidebar-user-menu"
-            >
-              <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => navigate('/configuracoes')}>
-                <Settings size={16} /> Configurações
-              </DropdownMenuItem>
-              <DropdownMenuItem className="menu-danger" onSelect={encerrarSessao}>
-                <LogOut size={16} /> Sair
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </aside>
 
@@ -184,45 +159,74 @@ export default function Layout() {
               {tema === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="icon-button notification-button" aria-label="Abrir notificações">
-                  <Bell size={18} />
-                  <span className="notification-dot">{estatisticas.semAtribuicao > 0 ? 2 : 1}</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="glass-surface dropdown-panel notifications-panel"
-              >
-                <DropdownMenuLabel>Notificações</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {estatisticas.semAtribuicao > 0 && (
-                  <DropdownMenuItem onSelect={() => navigate('/usuarios?system=sem-atribuicao')}>
-                    <span className="notification-icon notification-icon--warning">
-                      <UserRound size={16} />
-                    </span>
-                    <span>
-                      <strong>{estatisticas.semAtribuicao} sem atribuição</strong>
-                      <small>Revise os acessos pendentes.</small>
-                    </span>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onSelect={atualizarDados}>
-                  <span className="notification-icon">
-                    <DatabaseZap size={16} />
-                  </span>
-                  <span>
-                    <strong>Ambiente demonstrativo</strong>
-                    <small>Alterações duram apenas nesta sessão.</small>
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {(() => {
+              const vinculoComPerfil = usuarioLogado.vinculos?.find((v) => v.perfilId)
+              const perfilEncontrado = vinculoComPerfil?.perfilId
+                ? perfis.find((p) => p.id === vinculoComPerfil.perfilId)
+                : null
+              const perfilNome = perfilEncontrado?.nome ?? perfilEncontrado?.nivel ?? 'Colaborador'
 
-            <div className="topbar-avatar" title={usuarioLogado.nome}>
-              {iniciais(usuarioLogado.nome)}
-            </div>
+              return (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="topbar-user-flag glass-surface" aria-label="Menu do usuário">
+                      <span className="avatar topbar-user-flag__avatar">
+                        {iniciais(usuarioLogado.nome)}
+                      </span>
+                      <div className="topbar-user-flag__info">
+                        <strong className="topbar-user-flag__name">{usuarioLogado.nome}</strong>
+                        <span className="topbar-user-flag__meta">
+                          {usuarioLogado.departamento || 'Geral'}
+                        </span>
+                      </div>
+                      <ChevronDown size={14} className="topbar-user-flag__chevron" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    sideOffset={8}
+                    className="glass-surface dropdown-panel topbar-user-menu"
+                  >
+                    <div className="user-menu-header">
+                      <div className="user-menu-header__top">
+                        <span className="avatar avatar--large">{iniciais(usuarioLogado.nome)}</span>
+                        <div className="user-menu-header__titles">
+                          <strong className="user-menu-header__name">{usuarioLogado.nome}</strong>
+                          <span className="user-menu-header__role-pill">{perfilNome}</span>
+                        </div>
+                      </div>
+                      <div className="user-menu-details">
+                        <div className="user-menu-detail-item" title={usuarioLogado.email}>
+                          <Mail size={13} />
+                          <span>{usuarioLogado.email}</span>
+                        </div>
+                        {usuarioLogado.departamento && (
+                          <div className="user-menu-detail-item">
+                            <Briefcase size={13} />
+                            <span>{usuarioLogado.departamento}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem onSelect={() => navigate('/perfil')}>
+                      <User size={15} /> Meu Perfil
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => navigate('/configuracoes')}>
+                      <Settings size={15} /> Configurações
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem className="menu-danger" onSelect={encerrarSessao}>
+                      <LogOut size={15} /> Sair da conta
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )
+            })()}
           </div>
         </header>
 
