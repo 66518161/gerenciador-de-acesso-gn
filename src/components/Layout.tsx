@@ -1,16 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   Bell,
   ChevronDown,
-  CircleUserRound,
   DatabaseZap,
   LayoutDashboard,
   LogOut,
   Menu,
   Moon,
   RefreshCw,
-  Search,
   ServerCog,
   Settings,
   Sun,
@@ -18,7 +16,6 @@ import {
   UsersRound,
   X,
 } from 'lucide-react'
-import { Button } from './ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,84 +51,12 @@ export default function Layout() {
   const navigate = useNavigate()
   const { toast } = useToast()
   const { tema, alternarTema } = useTheme()
-  const { sistemas, usuarios, usuarioLogado, estatisticas, sair, recarregarDemonstracao } =
-    useAccess()
+  const { usuarioLogado, estatisticas, sair, recarregarDemonstracao } = useAccess()
   const [drawerAberto, setDrawerAberto] = useState(false)
-  const [busca, setBusca] = useState('')
-  const [buscaMobileAberta, setBuscaMobileAberta] = useState(false)
-  const [indiceAtivo, setIndiceAtivo] = useState(-1)
-  const searchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setDrawerAberto(false)
-    setBuscaMobileAberta(false)
-    setBusca('')
-    setIndiceAtivo(-1)
   }, [location.pathname, location.search])
-
-  useEffect(() => {
-    const fecharAoClicarFora = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setBusca('')
-        setIndiceAtivo(-1)
-      }
-    }
-    document.addEventListener('mousedown', fecharAoClicarFora)
-    return () => document.removeEventListener('mousedown', fecharAoClicarFora)
-  }, [])
-
-  const resultados = useMemo(() => {
-    const termo = busca.trim().toLocaleLowerCase('pt-BR')
-    if (termo.length < 2) return []
-    const sistemasEncontrados = sistemas
-      .filter((item) =>
-        `${item.nome} ${item.url} ${item.area}`.toLocaleLowerCase('pt-BR').includes(termo),
-      )
-      .slice(0, 3)
-      .map((item) => ({
-        id: item.id,
-        tipo: 'Sistema',
-        titulo: item.nome,
-        detalhe: item.area,
-        destino: `/sistemas?q=${encodeURIComponent(item.nome)}`,
-        icon: ServerCog,
-      }))
-    const usuariosEncontrados = usuarios
-      .filter((item) =>
-        `${item.nome} ${item.email} ${item.idMicrosoft}`.toLocaleLowerCase('pt-BR').includes(termo),
-      )
-      .slice(0, 3)
-      .map((item) => ({
-        id: item.id,
-        tipo: 'Usuário',
-        titulo: item.nome,
-        detalhe: item.email,
-        destino: `/usuarios?q=${encodeURIComponent(item.nome)}`,
-        icon: UserRound,
-      }))
-    return [...sistemasEncontrados, ...usuariosEncontrados]
-  }, [busca, sistemas, usuarios])
-
-  const selecionarResultado = (destino: string) => {
-    navigate(destino)
-    setBusca('')
-  }
-
-  const tratarTeclaBusca = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!resultados.length) return
-    if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      setIndiceAtivo((atual) => (atual + 1) % resultados.length)
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      setIndiceAtivo((atual) => (atual <= 0 ? resultados.length - 1 : atual - 1))
-    } else if (event.key === 'Enter' && indiceAtivo >= 0) {
-      event.preventDefault()
-      selecionarResultado(resultados[indiceAtivo].destino)
-    } else if (event.key === 'Escape') {
-      setBusca('')
-    }
-  }
 
   const encerrarSessao = () => {
     sair()
@@ -250,75 +175,11 @@ export default function Layout() {
           </div>
 
           <div className="topbar__actions">
-            <div ref={searchRef} className={cn('global-search', buscaMobileAberta && 'is-open')}>
-              <Search size={17} className="global-search__icon" />
-              <input
-                value={busca}
-                onChange={(event) => {
-                  setBusca(event.target.value)
-                  setIndiceAtivo(-1)
-                }}
-                onKeyDown={tratarTeclaBusca}
-                placeholder="Buscar sistemas e usuários..."
-                aria-label="Busca global"
-                role="combobox"
-                aria-expanded={busca.length >= 2}
-                aria-controls="resultados-busca"
-              />
-              <button
-                className="search-mobile-close"
-                onClick={() => {
-                  setBuscaMobileAberta(false)
-                  setBusca('')
-                }}
-                aria-label="Fechar busca"
-              >
-                <X size={17} />
-              </button>
-              {busca.trim().length >= 2 && (
-                <div id="resultados-busca" className="search-results glass-surface" role="listbox">
-                  {resultados.length ? (
-                    resultados.map((resultado, indice) => {
-                      const Icon = resultado.icon
-                      return (
-                        <button
-                          key={`${resultado.tipo}-${resultado.id}`}
-                          className={cn('search-result', indiceAtivo === indice && 'is-active')}
-                          onMouseEnter={() => setIndiceAtivo(indice)}
-                          onClick={() => selecionarResultado(resultado.destino)}
-                          role="option"
-                          aria-selected={indiceAtivo === indice}
-                        >
-                          <span className="search-result__icon">
-                            <Icon size={16} />
-                          </span>
-                          <span>
-                            <strong>{resultado.titulo}</strong>
-                            <small>{resultado.detalhe}</small>
-                          </span>
-                          <em>{resultado.tipo}</em>
-                        </button>
-                      )
-                    })
-                  ) : (
-                    <p className="search-empty">Nenhum resultado encontrado.</p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <button
-              className="icon-button search-mobile-trigger"
-              onClick={() => setBuscaMobileAberta(true)}
-              aria-label="Abrir busca"
-            >
-              <Search size={19} />
-            </button>
-
             <button
               className="icon-button theme-toggle"
               onClick={alternarTema}
               aria-label={`Ativar tema ${tema === 'dark' ? 'claro' : 'escuro'}`}
+              title={`Ativar tema ${tema === 'dark' ? 'claro' : 'escuro'}`}
             >
               {tema === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
