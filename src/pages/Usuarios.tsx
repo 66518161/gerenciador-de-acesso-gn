@@ -27,16 +27,26 @@ import { PageHeader } from '../components/PageHeader'
 import { useAccess } from '../context/AccessContext'
 import { useToast } from '../hooks/use-toast'
 import { getAreaIcon } from '../lib/areaIcons'
-import { classePorTexto, iniciais, pluralizar } from '../lib/format'
-import type { Usuario, UsuarioInput } from '../types/access'
+import { classePorTexto, formatarData, iniciais, pluralizar } from '../lib/format'
+import {
+  STATUS_MAP,
+  type StatusId,
+  type Usuario,
+  type UsuarioInput,
+  type UsuarioVinculoInput,
+} from '../types/access'
+
+const GUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
 
 const formVazio: UsuarioInput = {
   nome: '',
   email: '',
   departamento: '',
+  statusId: 1,
   senha: '',
   idMicrosoft: '',
   sistemasIds: [],
+  vinculos: [],
 }
 
 export default function Usuarios() {
@@ -56,10 +66,11 @@ export default function Usuarios() {
   const [busca, setBusca] = useState(() => searchParams.get('q') ?? '')
   const [departamento, setDepartamento] = useState(() => searchParams.get('dept') ?? 'todos')
   const [sistemaFiltro, setSistemaFiltro] = useState(() => searchParams.get('system') ?? 'todos')
+  const [statusFiltro, setStatusFiltro] = useState(() => searchParams.get('status') ?? 'todos')
   const [modalAberto, setModalAberto] = useState(false)
   const [editando, setEditando] = useState<Usuario | null>(null)
   const [form, setForm] = useState<UsuarioInput>(formVazio)
-  const [erros, setErros] = useState<Partial<Record<keyof UsuarioInput, string>>>({})
+  const [erros, setErros] = useState<Partial<Record<keyof UsuarioInput | 'guidFormat', string>>>({})
   const [novoDepartamento, setNovoDepartamento] = useState(false)
   const [buscaSistemas, setBuscaSistemas] = useState('')
   const [excluindo, setExcluindo] = useState<Usuario | null>(null)
@@ -75,9 +86,11 @@ export default function Usuarios() {
     const parametroBusca = searchParams.get('q')
     const parametroDept = searchParams.get('dept')
     const parametroSistema = searchParams.get('system')
+    const parametroStatus = searchParams.get('status')
     if (parametroBusca) setBusca(parametroBusca)
     if (parametroDept) setDepartamento(parametroDept)
     if (parametroSistema) setSistemaFiltro(parametroSistema)
+    if (parametroStatus) setStatusFiltro(parametroStatus)
     if (searchParams.get('novo') === '1') {
       setEditando(null)
       setForm(formVazio)
@@ -96,18 +109,20 @@ export default function Usuarios() {
     return usuarios.filter((usuario) => {
       const correspondeBusca =
         !termo ||
-        `${usuario.nome} ${usuario.email} ${usuario.idMicrosoft}`
+        `${usuario.nome} ${usuario.email} ${usuario.idMicrosoft ?? ''}`
           .toLocaleLowerCase('pt-BR')
           .includes(termo)
       const correspondeDept = departamento === 'todos' || usuario.departamento === departamento
       const correspondeSistema =
         sistemaFiltro === 'todos' ||
         (sistemaFiltro === 'sem-atribuicao'
-          ? usuario.sistemasIds.length === 0
-          : usuario.sistemasIds.includes(sistemaFiltro))
-      return correspondeBusca && correspondeDept && correspondeSistema
+          ? (usuario.sistemasIds?.length ?? 0) === 0
+          : usuario.sistemasIds?.includes(sistemaFiltro))
+      const correspondeStatus =
+        statusFiltro === 'todos' || String(usuario.statusId ?? 1) === statusFiltro
+      return correspondeBusca && correspondeDept && correspondeSistema && correspondeStatus
     })
-  }, [busca, departamento, sistemaFiltro, usuarios])
+  }, [busca, departamento, sistemaFiltro, statusFiltro, usuarios])
 
   const sistemasDoFormulario = useMemo(() => {
     const termo = buscaSistemas.trim().toLocaleLowerCase('pt-BR')
@@ -128,17 +143,31 @@ export default function Usuarios() {
 
   const abrirEdicao = (usuario: Usuario) => {
     setEditando(usuario)
+    const vinculosIniciais: UsuarioVinculoInput[] = usuario.sistemasIds.map((sId) => {
+      const existente = usuario.vinculos?.find((v) => v.sistemaId === sId)
+      return (
+        existente ?? {
+          sistemaId: sId,
+          perfilId: usuario.perfilId,
+          dataExpiracao: null,
+          statusId: 1,
+        }
+      )
+    })
+
     setForm({
       nome: usuario.nome,
       email: usuario.email,
       departamento: usuario.departamento,
+      statusId: usuario.statusId ?? 1,
       perfilId: usuario.perfilId ?? '',
       senha: '',
-      idMicrosoft: usuario.idMicrosoft,
+      idMicrosoft: usuario.idMicrosoft || '',
       sistemasIds: [...usuario.sistemasIds],
+      vinculos: vinculosIniciais,
     })
     setErros({})
-    setNovoDepartamento(!departamentos.includes(usuario.departamento))
+    setNovoDepartamento(!departamentos.includes(usuario.departamento ?? ''))
     setBuscaSistemas('')
     setModalAberto(true)
   }
@@ -161,7 +190,15 @@ export default function Usuarios() {
     if (!editando && !form.senha) proximosErros.senha = 'Crie uma senha inicial.'
     else if (form.senha && form.senha.length < 6)
       proximosErros.senha = 'A senha deve ter pelo menos 6 caracteres.'
-    if (!form.idMicrosoft.trim()) proximosErros.idMicrosoft = 'Informe o ID Microsoft.'
+
+    const idMs = form.idMicrosoft?.trim() ?? ''
+    if (!idMs) {
+      proximosErros.idMicrosoft = 'Informe o ID Microsoft (GUID).'
+    } else if (!GUID_REGEX.test(idMs)) {
+      proximosErros.idMicrosoft =
+        'Formato inválido. Use um GUID (ex: 6a9b407a-d98c-48c2-bb50-a9214ebc2980).'
+    }
+
     setErros(proximosErros)
     return Object.keys(proximosErros).length === 0
   }
@@ -172,11 +209,13 @@ export default function Usuarios() {
     const dados: UsuarioInput = {
       nome: form.nome.trim(),
       email: form.email.trim().toLowerCase(),
-      departamento: form.departamento.trim(),
+      departamento: form.departamento?.trim(),
+      statusId: (Number(form.statusId) || 1) as StatusId,
       perfilId: form.perfilId || undefined,
       senha: form.senha,
-      idMicrosoft: form.idMicrosoft.trim(),
+      idMicrosoft: form.idMicrosoft?.trim() || null,
       sistemasIds: [...form.sistemasIds],
+      vinculos: form.vinculos,
     }
     if (editando) {
       atualizarUsuario(editando.id, dados)
@@ -197,12 +236,51 @@ export default function Usuarios() {
   }
 
   const alternarSistema = (id: string) => {
+    setForm((atual) => {
+      const existe = atual.sistemasIds.includes(id)
+      const proximosSistemas = existe
+        ? atual.sistemasIds.filter((sistemaId) => sistemaId !== id)
+        : [...atual.sistemasIds, id]
+
+      const proximosVinculos = existe
+        ? (atual.vinculos ?? []).filter((v) => v.sistemaId !== id)
+        : [
+            ...(atual.vinculos ?? []),
+            {
+              sistemaId: id,
+              perfilId: perfis.find((p) => p.sistemaId === id)?.id,
+              dataExpiracao: null,
+              statusId: 1 as const,
+            },
+          ]
+
+      return {
+        ...atual,
+        sistemasIds: proximosSistemas,
+        vinculos: proximosVinculos,
+      }
+    })
+  }
+
+  const atualizarVinculoPerfil = (sistemaId: string, perfilId: string) => {
     setForm((atual) => ({
       ...atual,
-      sistemasIds: atual.sistemasIds.includes(id)
-        ? atual.sistemasIds.filter((sistemaId) => sistemaId !== id)
-        : [...atual.sistemasIds, id],
+      vinculos: (atual.vinculos ?? []).map((v) =>
+        v.sistemaId === sistemaId ? { ...v, perfilId: perfilId || undefined } : v,
+      ),
     }))
+  }
+
+  const gerarGuidMicrosoft = () => {
+    const guid =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = (Math.random() * 16) | 0
+            const v = c === 'x' ? r : (r & 0x3) | 0x8
+            return v.toString(16)
+          })
+    setForm((atual) => ({ ...atual, idMicrosoft: guid }))
   }
 
   const confirmarExclusao = () => {
@@ -222,30 +300,43 @@ export default function Usuarios() {
     setBusca('')
     setDepartamento('todos')
     setSistemaFiltro('todos')
+    setStatusFiltro('todos')
     setSearchParams({})
   }
 
   const renderPillsSistemas = (usuario: Usuario) => {
-    const vinculados = usuario.sistemasIds
+    const vinculados = (usuario.sistemasIds ?? [])
       .map((id) => sistemas.find((sistema) => sistema.id === id))
       .filter((s): s is NonNullable<typeof s> => Boolean(s))
     if (!vinculados.length) return <span className="no-access-pill">Sem atribuição</span>
     return (
-      <div className="system-pills">
-        {vinculados.slice(0, 3).map((sistema) => {
-          const IconeArea = getAreaIcon(sistema.area)
-          return (
-            <span
-              key={sistema.id}
-              title={`${sistema.nome} (${sistema.area})`}
-              className="inline-flex items-center gap-1.5"
-            >
-              <IconeArea size={11} className="opacity-80 flex-shrink-0" />
-              <span className="truncate">{sistema.nome}</span>
-            </span>
-          )
-        })}
-        {vinculados.length > 3 && <span className="more-pill">+{vinculados.length - 3}</span>}
+      <div className="flex flex-col gap-1">
+        <div className="system-pills">
+          {vinculados.slice(0, 3).map((sistema) => {
+            const IconeArea = getAreaIcon(sistema.area)
+            const vinculo = usuario.vinculos?.find((v) => v.sistemaId === sistema.id)
+            const perfilVinculado = vinculo?.perfilId
+              ? perfis.find((p) => p.id === vinculo.perfilId)
+              : undefined
+
+            return (
+              <span
+                key={sistema.id}
+                title={`${sistema.nome} (${sistema.area})${perfilVinculado ? ` - Perfil: ${perfilVinculado.nome}` : ''}`}
+                className="inline-flex items-center gap-1.5"
+              >
+                <IconeArea size={11} className="opacity-80 flex-shrink-0" />
+                <span className="truncate">{sistema.nome}</span>
+                {perfilVinculado && (
+                  <span className="text-[9px] opacity-75 font-semibold bg-black/10 dark:bg-white/10 px-1 rounded">
+                    {perfilVinculado.nome}
+                  </span>
+                )}
+              </span>
+            )
+          })}
+          {vinculados.length > 3 && <span className="more-pill">+{vinculados.length - 3}</span>}
+        </div>
       </div>
     )
   }
@@ -296,6 +387,15 @@ export default function Usuarios() {
             ))}
           </select>
         </label>
+        <label className="select-field">
+          <span>Status</span>
+          <select value={statusFiltro} onChange={(event) => setStatusFiltro(event.target.value)}>
+            <option value="todos">Todos os status</option>
+            <option value="1">Ativo</option>
+            <option value="2">Inativo</option>
+            <option value="3">Bloqueado</option>
+          </select>
+        </label>
         <span className="result-count">{pluralizar(filtrados.length, 'usuário', 'usuários')}</span>
       </section>
 
@@ -305,18 +405,19 @@ export default function Usuarios() {
             <thead>
               <tr>
                 <th>Usuário</th>
+                <th>Status</th>
                 <th>Departamento</th>
-                <th>ID Microsoft</th>
-                <th>Sistemas</th>
+                <th>ID Microsoft (GUID)</th>
+                <th>Sistemas & Perfis</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
               {filtrados.map((usuario) => {
                 const primeiroSistema = sistemas.find((sistema) =>
-                  usuario.sistemasIds.includes(sistema.id),
+                  usuario.sistemasIds?.includes(sistema.id),
                 )
-                const cor = classePorTexto(primeiroSistema?.area ?? usuario.departamento)
+                const cor = classePorTexto(primeiroSistema?.area ?? usuario.departamento ?? 'TI')
                 return (
                   <tr key={usuario.id}>
                     <td data-label="Usuário">
@@ -327,21 +428,38 @@ export default function Usuarios() {
                         <span>
                           <strong>{usuario.nome}</strong>
                           <small>{usuario.email}</small>
-                          {usuario.perfilId && (
-                            <span className="user-role-badge">
-                              {perfis.find((p) => p.id === usuario.perfilId)?.nome ?? 'Perfil'}
-                            </span>
-                          )}
                         </span>
-                      </div>{' '}
+                      </div>
+                    </td>
+                    <td data-label="Status">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1 ${
+                          usuario.statusId === 1
+                            ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30'
+                            : usuario.statusId === 2
+                              ? 'bg-slate-500/15 text-slate-400 border border-slate-500/30'
+                              : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'
+                        }`}
+                      >
+                        <i
+                          className="w-1.5 h-1.5 rounded-full"
+                          style={{
+                            background: STATUS_MAP[usuario.statusId ?? 1]?.color ?? '#10B981',
+                          }}
+                        />
+                        {STATUS_MAP[usuario.statusId ?? 1]?.nome ?? 'Ativo'}
+                      </span>
                     </td>
                     <td data-label="Departamento">
-                      <span className="department-pill">{usuario.departamento}</span>
+                      <span className="department-pill">{usuario.departamento || 'Sem depto'}</span>
                     </td>
                     <td data-label="ID Microsoft">
-                      <span className="microsoft-id" title={usuario.idMicrosoft}>
+                      <span
+                        className="microsoft-id font-mono text-[11px]"
+                        title={usuario.idMicrosoft || 'Não informado'}
+                      >
                         <IdCard size={14} />
-                        {usuario.idMicrosoft}
+                        <span className="truncate max-w-[140px]">{usuario.idMicrosoft || '—'}</span>
                       </span>
                     </td>
                     <td data-label="Sistemas">{renderPillsSistemas(usuario)}</td>
@@ -498,42 +616,51 @@ export default function Usuarios() {
                 {erros.senha && <p className="form-error">{erros.senha}</p>}
               </div>
               <div className="form-field">
-                <label htmlFor="usuario-perfil">Perfil de acesso</label>
+                <label htmlFor="usuario-status">Status do usuário</label>
                 <div className="select-wrap">
                   <select
-                    id="usuario-perfil"
+                    id="usuario-status"
                     className="field"
-                    value={form.perfilId ?? ''}
+                    value={form.statusId ?? 1}
                     onChange={(event) =>
-                      setForm((atual) => ({ ...atual, perfilId: event.target.value }))
+                      setForm((atual) => ({
+                        ...atual,
+                        statusId: Number(event.target.value) as StatusId,
+                      }))
                     }
                   >
-                    <option value="">Selecione um perfil</option>
-                    {perfis.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.nome} ({item.nivel ?? 'Operacional'})
-                      </option>
-                    ))}
+                    <option value={1}>Ativo (1)</option>
+                    <option value={2}>Inativo (2)</option>
+                    <option value={3}>Bloqueado (3)</option>
                   </select>
                   <ChevronDown size={15} />
                 </div>
               </div>
               <div className="form-field">
-                <label htmlFor="usuario-microsoft">
-                  ID Microsoft <b>*</b>
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="usuario-microsoft">
+                    ID Microsoft (GUID) <b>*</b>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={gerarGuidMicrosoft}
+                    className="text-xs text-[var(--color-primary)] hover:underline font-medium cursor-pointer"
+                  >
+                    Gerar GUID
+                  </button>
+                </div>
                 <input
                   id="usuario-microsoft"
-                  className="field"
-                  value={form.idMicrosoft}
+                  className="field font-mono text-xs"
+                  value={form.idMicrosoft || ''}
                   onChange={(event) =>
                     setForm((atual) => ({ ...atual, idMicrosoft: event.target.value }))
                   }
-                  placeholder="usuario@empresa.com ou GUID"
+                  placeholder="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
                 />
                 {erros.idMicrosoft && <p className="form-error">{erros.idMicrosoft}</p>}
                 <small className="field-hint">
-                  Campo livre para identificação no ambiente Microsoft.
+                  Identificador GUID único no Microsoft Entra ID / Azure AD.
                 </small>
               </div>
               <div className="form-field form-field--full system-access-field">
@@ -559,30 +686,75 @@ export default function Usuarios() {
                   {sistemasDoFormulario.map((sistema) => {
                     const selecionado = form.sistemasIds.includes(sistema.id)
                     const IconeArea = getAreaIcon(sistema.area)
+                    const vinculoAtual = form.vinculos?.find((v) => v.sistemaId === sistema.id)
+                    const perfisDoSistema = perfis.filter((p) => p.sistemaId === sistema.id)
+
                     return (
-                      <button
-                        type="button"
-                        className={selecionado ? 'system-toggle is-selected' : 'system-toggle'}
+                      <div
                         key={sistema.id}
-                        onClick={() => alternarSistema(sistema.id)}
-                        role="switch"
-                        aria-checked={selecionado}
+                        className={`p-2 rounded-lg border transition-all ${
+                          selecionado
+                            ? 'border-[var(--color-primary)] bg-[var(--color-primary-soft)]'
+                            : 'border-[var(--border-subtle)] bg-[var(--surface-base)]'
+                        }`}
                       >
-                        <span className="system-toggle__icon" title={`Área: ${sistema.area}`}>
-                          <IconeArea size={17} />
-                        </span>
-                        <span>
-                          <strong>{sistema.nome}</strong>
-                          <span className="inline-flex items-center gap-1 text-[var(--text-tertiary)] text-[9px]">
-                            <IconeArea
-                              size={10}
-                              className="text-[var(--color-primary)] opacity-85"
-                            />
-                            <span>{sistema.area}</span>
+                        <button
+                          type="button"
+                          className={
+                            selecionado
+                              ? 'system-toggle is-selected w-full'
+                              : 'system-toggle w-full'
+                          }
+                          onClick={() => alternarSistema(sistema.id)}
+                          role="switch"
+                          aria-checked={selecionado}
+                        >
+                          <span className="system-toggle__icon" title={`Área: ${sistema.area}`}>
+                            <IconeArea size={17} />
                           </span>
-                        </span>
-                        <i>{selecionado && <Check size={13} />}</i>
-                      </button>
+                          <span className="flex-1 text-left">
+                            <strong>{sistema.nome}</strong>
+                            <span className="inline-flex items-center gap-1 text-[var(--text-tertiary)] text-[9px] block">
+                              <IconeArea
+                                size={10}
+                                className="text-[var(--color-primary)] opacity-85"
+                              />
+                              <span>{sistema.area}</span>
+                            </span>
+                          </span>
+                          <i>{selecionado && <Check size={13} />}</i>
+                        </button>
+
+                        {selecionado && (
+                          <div className="mt-2 pt-2 border-t border-[var(--border-subtle)] grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <label className="text-[10px] text-[var(--text-secondary)] font-medium block mb-1">
+                                Perfil de acesso neste sistema
+                              </label>
+                              <select
+                                className="field field--compact text-xs w-full py-1 h-8"
+                                value={vinculoAtual?.perfilId ?? ''}
+                                onChange={(e) => atualizarVinculoPerfil(sistema.id, e.target.value)}
+                              >
+                                <option value="">Sem perfil específico</option>
+                                {perfisDoSistema.map((p) => (
+                                  <option key={p.id} value={p.id}>
+                                    {p.nome} ({p.nivel ?? 'Operacional'})
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-[var(--text-secondary)] font-medium block mb-1">
+                                Vínculo usuário↔sistema
+                              </span>
+                              <span className="text-[11px] text-[var(--text-secondary)] block py-1.5">
+                                Status: Ativo · Vínculo com data
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     )
                   })}
                 </div>

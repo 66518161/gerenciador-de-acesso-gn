@@ -1,32 +1,47 @@
 [
   {
     "id": "dept-ti",
+    "departamentoId": 1,
     "nome": "TI",
-    "descricao": "Tecnologia da Informação e Infraestrutura",
-    "criadoEm": "2024-01-05T09:00:00.000Z"
+    "descricao": "Tecnologia da Informação, Infraestrutura e Segurança",
+    "statusId": 1,
+    "dataCriacao": "2024-01-05T09:00:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "dept-financeiro",
+    "departamentoId": 2,
     "nome": "Financeiro",
-    "descricao": "Controladoria, Tesouraria e Contabilidade",
-    "criadoEm": "2024-01-05T09:00:00.000Z"
+    "descricao": "Controladoria, Tesouraria, Fiscal e Contabilidade",
+    "statusId": 1,
+    "dataCriacao": "2024-01-05T09:00:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "dept-rh",
+    "departamentoId": 3,
     "nome": "RH",
-    "descricao": "Recursos Humanos, DP e Gestão de Pessoas",
-    "criadoEm": "2024-01-05T09:00:00.000Z"
+    "descricao": "Recursos Humanos, DP, Benefícios e Gestão de Pessoas",
+    "statusId": 1,
+    "dataCriacao": "2024-01-05T09:00:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "dept-comercial",
+    "departamentoId": 4,
     "nome": "Comercial",
-    "descricao": "Vendas, Negociação e Parcerias",
-    "criadoEm": "2024-01-05T09:00:00.000Z"
+    "descricao": "Vendas, Negociação, Novos Negócios e Parcerias",
+    "statusId": 1,
+    "dataCriacao": "2024-01-05T09:00:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "dept-operacoes",
+    "departamentoId": 5,
     "nome": "Operações",
-    "descricao": "Logística, Distribuição e Campo",
-    "criadoEm": "2024-01-05T09:00:00.000Z"
+    "descricao": "Logística, Distribuição de Combustíveis e Operações de Campo",
+    "statusId": 1,
+    "dataCriacao": "2024-01-05T09:00:00.000Z",
+    "dataAlteracao": null
   }
 ]

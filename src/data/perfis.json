@@ -1,23 +1,155 @@
 [
   {
-    "id": "perfil-administrador",
+    "id": "perfil-rh-admin",
+    "perfilId": 1,
+    "sistemaId": "sistema-rh",
     "nome": "Administrador",
-    "descricao": "Acesso irrestrito a configurações, criação de usuários, catálogos e relatórios gerais.",
+    "descricao": "Gestão completa do portal RH, folha e parametrização.",
     "nivel": "Total",
-    "criadoEm": "2024-01-05T09:00:00.000Z"
+    "dataCriacao": "2024-01-15T09:00:00.000Z"
   },
   {
-    "id": "perfil-gestor",
+    "id": "perfil-rh-gestor",
+    "perfilId": 2,
+    "sistemaId": "sistema-rh",
     "nome": "Gestor",
-    "descricao": "Gestão e visualização de colaboradores, relatórios de equipe e atribuições do setor.",
+    "descricao": "Aprovação de solicitações da equipe e relatórios de ponto.",
     "nivel": "Gerencial",
-    "criadoEm": "2024-01-05T09:00:00.000Z"
+    "dataCriacao": "2024-01-15T09:00:00.000Z"
   },
   {
-    "id": "perfil-colaborador",
-    "nome": "Colaborador",
-    "descricao": "Acesso padrão aos sistemas e portais concedidos conforme as funções do cargo.",
+    "id": "perfil-rh-leitura",
+    "perfilId": 3,
+    "sistemaId": "sistema-rh",
+    "nome": "Leitura",
+    "descricao": "Consulta de dados pessoais e espelho de ponto.",
     "nivel": "Operacional",
-    "criadoEm": "2024-01-05T09:00:00.000Z"
+    "dataCriacao": "2024-01-15T09:00:00.000Z"
+  },
+  {
+    "id": "perfil-compras-admin",
+    "perfilId": 4,
+    "sistemaId": "sistema-compras",
+    "nome": "Administrador",
+    "descricao": "Aprovação de pedidos de alta alçada e gestão de fornecedores.",
+    "nivel": "Total",
+    "dataCriacao": "2024-02-08T13:30:00.000Z"
+  },
+  {
+    "id": "perfil-compras-comprador",
+    "perfilId": 5,
+    "sistemaId": "sistema-compras",
+    "nome": "Comprador",
+    "descricao": "Emissão de pedidos e negociação de cotações.",
+    "nivel": "Operacional",
+    "dataCriacao": "2024-02-08T13:30:00.000Z"
+  },
+  {
+    "id": "perfil-helpdesk-admin",
+    "perfilId": 6,
+    "sistemaId": "sistema-helpdesk",
+    "nome": "Administrador",
+    "descricao": "Configuração de filas, SLAs e relatórios globais de suporte.",
+    "nivel": "Total",
+    "dataCriacao": "2024-02-21T10:15:00.000Z"
+  },
+  {
+    "id": "perfil-helpdesk-tecnico",
+    "perfilId": 7,
+    "sistemaId": "sistema-helpdesk",
+    "nome": "Técnico",
+    "descricao": "Atendimento de chamados e resolução técnica.",
+    "nivel": "Operacional",
+    "dataCriacao": "2024-02-21T10:15:00.000Z"
+  },
+  {
+    "id": "perfil-intranet-editor",
+    "perfilId": 8,
+    "sistemaId": "sistema-intranet",
+    "nome": "Editor",
+    "descricao": "Publicação de notícias, comunicados e banners institucionais.",
+    "nivel": "Gerencial",
+    "dataCriacao": "2024-03-04T08:45:00.000Z"
+  },
+  {
+    "id": "perfil-intranet-leitor",
+    "perfilId": 9,
+    "sistemaId": "sistema-intranet",
+    "nome": "Leitor",
+    "descricao": "Acesso para leitura e interação em comunicados da intranet.",
+    "nivel": "Operacional",
+    "dataCriacao": "2024-03-04T08:45:00.000Z"
+  },
+  {
+    "id": "perfil-financeiro-admin",
+    "perfilId": 10,
+    "sistemaId": "sistema-financeiro",
+    "nome": "Administrador",
+    "descricao": "Liberação de remessas, fechamento contábil e auditoria financeira.",
+    "nivel": "Total",
+    "dataCriacao": "2024-03-19T14:20:00.000Z"
+  },
+  {
+    "id": "perfil-financeiro-analista",
+    "perfilId": 11,
+    "sistemaId": "sistema-financeiro",
+    "nome": "Analista",
+    "descricao": "Lançamentos de contas a pagar, conciliação e relatórios.",
+    "nivel": "Operacional",
+    "dataCriacao": "2024-03-19T14:20:00.000Z"
+  },
+  {
+    "id": "perfil-ferias-aprovador",
+    "perfilId": 12,
+    "sistemaId": "sistema-ferias",
+    "nome": "Aprovador",
+    "descricao": "Validação e homologação de escalas de férias das equipes.",
+    "nivel": "Gerencial",
+    "dataCriacao": "2024-04-02T11:10:00.000Z"
+  },
+  {
+    "id": "perfil-ferias-colaborador",
+    "perfilId": 13,
+    "sistemaId": "sistema-ferias",
+    "nome": "Colaborador",
+    "descricao": "Agendamento e solicitação de períodos de férias.",
+    "nivel": "Operacional",
+    "dataCriacao": "2024-04-02T11:10:00.000Z"
+  },
+  {
+    "id": "perfil-bi-analista",
+    "perfilId": 14,
+    "sistemaId": "sistema-bi",
+    "nome": "Analista de BI",
+    "descricao": "Construção de relatórios analíticos e modelagem de cubos de dados.",
+    "nivel": "Gerencial",
+    "dataCriacao": "2024-04-17T16:00:00.000Z"
+  },
+  {
+    "id": "perfil-bi-leitor",
+    "perfilId": 15,
+    "sistemaId": "sistema-bi",
+    "nome": "Visualizador",
+    "descricao": "Visualização e filtros nos painéis executivos.",
+    "nivel": "Operacional",
+    "dataCriacao": "2024-04-17T16:00:00.000Z"
+  },
+  {
+    "id": "perfil-beneficios-gestor",
+    "perfilId": 16,
+    "sistemaId": "sistema-beneficios",
+    "nome": "Gestor",
+    "descricao": "Gestão de contratos com operadoras de benefícios e adesões.",
+    "nivel": "Gerencial",
+    "dataCriacao": "2024-05-06T09:35:00.000Z"
+  },
+  {
+    "id": "perfil-beneficios-usuario",
+    "perfilId": 17,
+    "sistemaId": "sistema-beneficios",
+    "nome": "Beneficiário",
+    "descricao": "Consulta de carteirinha digital, extratos e inclusão de dependentes.",
+    "nivel": "Operacional",
+    "dataCriacao": "2024-05-06T09:35:00.000Z"
   }
 ]

@@ -17,11 +17,12 @@ import { useAccess } from '../context/AccessContext'
 import { useToast } from '../hooks/use-toast'
 import { AreaBadge, getAreaIcon } from '../lib/areaIcons'
 import { formatarData, iniciais } from '../lib/format'
+import { STATUS_MAP } from '../types/access'
 
 export default function Perfil() {
   const navigate = useNavigate()
   const { toast } = useToast()
-  const { usuarioLogado, sistemas, sair, trocarMinhaSenha } = useAccess()
+  const { usuarioLogado, perfis, sistemas, sair, trocarMinhaSenha } = useAccess()
   const [senhaAtual, setSenhaAtual] = useState('')
   const [novaSenha, setNovaSenha] = useState('')
   const [confirmacao, setConfirmacao] = useState('')
@@ -85,9 +86,28 @@ export default function Perfil() {
           <div className="profile-identity">
             <span className="profile-avatar">{iniciais(usuarioLogado.nome)}</span>
             <span>
-              <small>COLABORADOR</small>
+              <div className="flex items-center gap-2">
+                <small>COLABORADOR</small>
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1 ${
+                    usuarioLogado.statusId === 1
+                      ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30'
+                      : usuarioLogado.statusId === 2
+                        ? 'bg-slate-500/15 text-slate-400 border border-slate-500/30'
+                        : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'
+                  }`}
+                >
+                  <i
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{
+                      background: STATUS_MAP[usuarioLogado.statusId ?? 1]?.color ?? '#10B981',
+                    }}
+                  />
+                  {STATUS_MAP[usuarioLogado.statusId ?? 1]?.nome ?? 'Ativo'}
+                </span>
+              </div>
               <h2>{usuarioLogado.nome}</h2>
-              <p>{usuarioLogado.departamento}</p>
+              <p>{usuarioLogado.departamento || 'Sem departamento'}</p>
             </span>
           </div>
           <div className="profile-details">
@@ -114,8 +134,13 @@ export default function Perfil() {
                 <IdCard size={17} />
               </span>
               <span>
-                <small>ID Microsoft</small>
-                <strong title={usuarioLogado.idMicrosoft}>{usuarioLogado.idMicrosoft}</strong>
+                <small>ID Microsoft (GUID)</small>
+                <strong
+                  className="font-mono text-xs"
+                  title={usuarioLogado.idMicrosoft ?? 'Não configurado'}
+                >
+                  {usuarioLogado.idMicrosoft || 'Não configurado'}
+                </strong>
               </span>
             </div>
             <div>
@@ -203,24 +228,47 @@ export default function Perfil() {
           <div className="my-systems-grid">
             {meusSistemas.map((sistema) => {
               const IconeArea = getAreaIcon(sistema.area)
+              const vinculo = usuarioLogado.vinculos?.find((v) => v.sistemaId === sistema.id)
+              const perfilVinculado = vinculo?.perfilId
+                ? perfis.find((p) => p.id === vinculo.perfilId)
+                : undefined
+
               return (
-                <a
-                  className="my-system-card glass-surface"
+                <div
+                  className="my-system-card glass-surface flex flex-col justify-between"
                   key={sistema.id}
-                  href={sistema.url}
-                  target="_blank"
-                  rel="noreferrer"
                 >
-                  <span className="system-icon" title={`Área: ${sistema.area}`}>
-                    <IconeArea size={21} />
-                  </span>
-                  <span>
-                    <strong>{sistema.nome}</strong>
-                    <AreaBadge area={sistema.area} size="sm" />
-                    <em>{sistema.url.replace(/^https?:\/\//, '')}</em>
-                  </span>
-                  <ExternalLink size={17} />
-                </a>
+                  <a
+                    href={sistema.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3 w-full"
+                  >
+                    <span className="system-icon" title={`Área: ${sistema.area}`}>
+                      <IconeArea size={21} />
+                    </span>
+                    <span className="flex-1">
+                      <strong>{sistema.nome}</strong>
+                      <AreaBadge area={sistema.area} size="sm" />
+                      <em>{sistema.url.replace(/^https?:\/\//, '')}</em>
+                    </span>
+                    <ExternalLink size={17} />
+                  </a>
+
+                  {perfilVinculado && (
+                    <div className="mt-2 pt-2 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs text-[var(--text-secondary)]">
+                      <span>
+                        Perfil:{' '}
+                        <strong className="text-[var(--text-primary)]">
+                          {perfilVinculado.nome}
+                        </strong>
+                      </span>
+                      <span className="text-[10px] bg-[var(--color-primary-soft)] text-[var(--color-primary)] font-medium px-2 py-0.5 rounded">
+                        {perfilVinculado.nivel || 'Operacional'}
+                      </span>
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>

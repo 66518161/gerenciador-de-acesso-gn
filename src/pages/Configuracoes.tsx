@@ -28,13 +28,21 @@ import { useAccess } from '../context/AccessContext'
 import { useToast } from '../hooks/use-toast'
 import { getAreaIcon } from '../lib/areaIcons'
 import { formatarData, pluralizar } from '../lib/format'
-import type { Departamento, DepartamentoInput, PerfilAcesso, PerfilInput } from '../types/access'
+import {
+  STATUS_MAP,
+  type Departamento,
+  type DepartamentoInput,
+  type PerfilAcesso,
+  type PerfilInput,
+  type StatusId,
+} from '../types/access'
 
 export default function Configuracoes() {
   const { toast } = useToast()
   const {
     departamentos,
     perfis,
+    sistemas,
     usuarios,
     criarDepartamento,
     atualizarDepartamento,
@@ -55,20 +63,29 @@ export default function Configuracoes() {
   // Estados modal Departamento
   const [modalDeptAberto, setModalDeptAberto] = useState(false)
   const [editandoDept, setEditandoDept] = useState<Departamento | null>(null)
-  const [formDept, setFormDept] = useState<DepartamentoInput>({ nome: '', descricao: '' })
+  const [formDept, setFormDept] = useState<DepartamentoInput>({
+    nome: '',
+    descricao: '',
+    statusId: 1,
+  })
   const [errosDept, setErrosDept] = useState<Partial<Record<keyof DepartamentoInput, string>>>({})
 
   // Estados exclusão Departamento
   const [excluindoDept, setExcluindoDept] = useState<Departamento | null>(null)
   const [bloqueioExclusaoDept, setBloqueioExclusaoDept] = useState<string | null>(null)
 
+  // Filtro de sistema na aba perfis
+  const [sistemaPerfilFiltro, setSistemaPerfilFiltro] = useState<string>('todos')
+
   // Estados modal Perfil
   const [modalPerfilAberto, setModalPerfilAberto] = useState(false)
   const [editandoPerfil, setEditandoPerfil] = useState<PerfilAcesso | null>(null)
   const [formPerfil, setFormPerfil] = useState<PerfilInput>({
+    sistemaId: '',
     nome: '',
     descricao: '',
     nivel: 'Operacional',
+    statusId: 1,
   })
   const [errosPerfil, setErrosPerfil] = useState<Partial<Record<keyof PerfilInput, string>>>({})
 
@@ -81,14 +98,14 @@ export default function Configuracoes() {
   // ---------------------------------------------------------------------------
   const abrirNovoDept = () => {
     setEditandoDept(null)
-    setFormDept({ nome: '', descricao: '' })
+    setFormDept({ nome: '', descricao: '', statusId: 1 })
     setErrosDept({})
     setModalDeptAberto(true)
   }
 
   const abrirEdicaoDept = (dept: Departamento) => {
     setEditandoDept(dept)
-    setFormDept({ nome: dept.nome, descricao: dept.descricao || '' })
+    setFormDept({ nome: dept.nome, descricao: dept.descricao || '', statusId: dept.statusId ?? 1 })
     setErrosDept({})
     setModalDeptAberto(true)
   }
@@ -117,6 +134,7 @@ export default function Configuracoes() {
     const dados: DepartamentoInput = {
       nome: formDept.nome.trim(),
       descricao: formDept.descricao?.trim() || undefined,
+      statusId: (Number(formDept.statusId) || 1) as StatusId,
     }
     if (editandoDept) {
       atualizarDepartamento(editandoDept.id, dados)
@@ -182,7 +200,13 @@ export default function Configuracoes() {
   // ---------------------------------------------------------------------------
   const abrirNovoPerfil = () => {
     setEditandoPerfil(null)
-    setFormPerfil({ nome: '', descricao: '', nivel: 'Operacional' })
+    setFormPerfil({
+      sistemaId: sistemas[0]?.id || '',
+      nome: '',
+      descricao: '',
+      nivel: 'Operacional',
+      statusId: 1,
+    })
     setErrosPerfil({})
     setModalPerfilAberto(true)
   }
@@ -190,9 +214,11 @@ export default function Configuracoes() {
   const abrirEdicaoPerfil = (perfil: PerfilAcesso) => {
     setEditandoPerfil(perfil)
     setFormPerfil({
+      sistemaId: perfil.sistemaId || sistemas[0]?.id || '',
       nome: perfil.nome,
       descricao: perfil.descricao || '',
       nivel: perfil.nivel || 'Operacional',
+      statusId: perfil.statusId ?? 1,
     })
     setErrosPerfil({})
     setModalPerfilAberto(true)
@@ -202,14 +228,18 @@ export default function Configuracoes() {
     const proximos: Partial<Record<keyof PerfilInput, string>> = {}
     if (!formPerfil.nome.trim()) {
       proximos.nome = 'Informe o nome do perfil de acesso.'
+    }
+    if (!formPerfil.sistemaId) {
+      proximos.sistemaId = 'Selecione o sistema ao qual o perfil pertence.'
     } else {
       const nomeDuplicado = perfis.some(
         (p) =>
           p.id !== editandoPerfil?.id &&
+          p.sistemaId === formPerfil.sistemaId &&
           p.nome.trim().toLowerCase() === formPerfil.nome.trim().toLowerCase(),
       )
       if (nomeDuplicado) {
-        proximos.nome = 'Já existe um perfil com este nome.'
+        proximos.nome = 'Já existe um perfil com este nome para este sistema.'
       }
     }
     setErrosPerfil(proximos)
@@ -220,9 +250,11 @@ export default function Configuracoes() {
     event.preventDefault()
     if (!validarPerfil()) return
     const dados: PerfilInput = {
+      sistemaId: formPerfil.sistemaId,
       nome: formPerfil.nome.trim(),
       descricao: formPerfil.descricao?.trim() || undefined,
       nivel: formPerfil.nivel?.trim() || 'Operacional',
+      statusId: (Number(formPerfil.statusId) || 1) as StatusId,
     }
     if (editandoPerfil) {
       atualizarPerfil(editandoPerfil.id, dados)
@@ -290,9 +322,14 @@ export default function Configuracoes() {
   )
 
   const perfilTermo = buscaPerfil.trim().toLowerCase()
-  const perfisFiltrados = perfis.filter((p) =>
-    `${p.nome} ${p.descricao || ''} ${p.nivel || ''}`.toLowerCase().includes(perfilTermo),
-  )
+  const perfisFiltrados = perfis.filter((p) => {
+    const nomeSistema = sistemas.find((s) => s.id === p.sistemaId)?.nome || ''
+    const matchBusca = `${p.nome} ${p.descricao || ''} ${p.nivel || ''} ${nomeSistema}`
+      .toLowerCase()
+      .includes(perfilTermo)
+    const matchSistema = sistemaPerfilFiltro === 'todos' || p.sistemaId === sistemaPerfilFiltro
+    return matchBusca && matchSistema
+  })
 
   return (
     <div className="settings-page page-stack">
@@ -364,9 +401,22 @@ export default function Configuracoes() {
                           <IconeDept size={22} />
                         </span>
                         <div>
-                          <h2>{dept.nome}</h2>
+                          <div className="flex items-center gap-2">
+                            <h2>{dept.nome}</h2>
+                            <span
+                              className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                                dept.statusId === 1
+                                  ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30'
+                                  : dept.statusId === 2
+                                    ? 'bg-slate-500/15 text-slate-400 border border-slate-500/30'
+                                    : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'
+                              }`}
+                            >
+                              {STATUS_MAP[dept.statusId ?? 1]?.nome ?? 'Ativo'}
+                            </span>
+                          </div>
                           <small className="settings-card__date">
-                            Criado em {formatarData(dept.criadoEm)}
+                            Criado em {formatarData(dept.dataCriacao || dept.criadoEm)}
                           </small>
                         </div>
                       </div>
@@ -432,10 +482,24 @@ export default function Configuracoes() {
               <input
                 value={buscaPerfil}
                 onChange={(e) => setBuscaPerfil(e.target.value)}
-                placeholder="Buscar perfil por nome, nível ou descrição..."
+                placeholder="Buscar perfil por nome, nível, sistema ou descrição..."
                 aria-label="Buscar perfis"
               />
             </div>
+            <label className="select-field">
+              <span>Sistema</span>
+              <select
+                value={sistemaPerfilFiltro}
+                onChange={(e) => setSistemaPerfilFiltro(e.target.value)}
+              >
+                <option value="todos">Todos os sistemas</option>
+                {sistemas.map((sis) => (
+                  <option key={sis.id} value={sis.id}>
+                    {sis.nome}
+                  </option>
+                ))}
+              </select>
+            </label>
             <span className="result-count">
               {pluralizar(perfisFiltrados.length, 'perfil', 'perfis')}
             </span>
@@ -445,6 +509,7 @@ export default function Configuracoes() {
             <section className="settings-grid">
               {perfisFiltrados.map((perfil, index) => {
                 const vinculados = usuariosVinculadosAoPerfil(perfil.id)
+                const sistemaVinculado = sistemas.find((s) => s.id === perfil.sistemaId)
                 return (
                   <article
                     key={perfil.id}
@@ -462,9 +527,14 @@ export default function Configuracoes() {
                               <span className="perfil-level-pill">{perfil.nivel}</span>
                             )}
                           </div>
-                          <small className="settings-card__date">
-                            Criado em {formatarData(perfil.criadoEm)}
-                          </small>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[11px] font-semibold text-[var(--color-primary)] bg-[var(--color-primary-soft)] px-2 py-0.5 rounded">
+                              {sistemaVinculado?.nome ?? 'Sistema geral'}
+                            </span>
+                            <small className="settings-card__date">
+                              {formatarData(perfil.dataCriacao || perfil.criadoEm)}
+                            </small>
+                          </div>
                         </div>
                       </div>
                       <div className="card-actions">
@@ -560,6 +630,25 @@ export default function Configuracoes() {
               </div>
 
               <div className="form-field">
+                <label htmlFor="dept-status">Status</label>
+                <select
+                  id="dept-status"
+                  className="field"
+                  value={formDept.statusId ?? 1}
+                  onChange={(e) =>
+                    setFormDept((atual) => ({
+                      ...atual,
+                      statusId: Number(e.target.value) as StatusId,
+                    }))
+                  }
+                >
+                  <option value={1}>Ativo (1)</option>
+                  <option value={2}>Inativo (2)</option>
+                  <option value={3}>Bloqueado (3)</option>
+                </select>
+              </div>
+
+              <div className="form-field">
                 <label htmlFor="dept-descricao">Descrição / Finalidade</label>
                 <textarea
                   id="dept-descricao"
@@ -609,6 +698,28 @@ export default function Configuracoes() {
             </DialogHeader>
             <div className="dialog-form">
               <div className="form-field">
+                <label htmlFor="perfil-sistema">
+                  Sistema vinculado <b>*</b>
+                </label>
+                <select
+                  id="perfil-sistema"
+                  className="field"
+                  value={formPerfil.sistemaId}
+                  onChange={(e) =>
+                    setFormPerfil((atual) => ({ ...atual, sistemaId: e.target.value }))
+                  }
+                >
+                  <option value="">Selecione o sistema</option>
+                  {sistemas.map((sis) => (
+                    <option key={sis.id} value={sis.id}>
+                      {sis.nome} ({sis.area})
+                    </option>
+                  ))}
+                </select>
+                {errosPerfil.sistemaId && <p className="form-error">{errosPerfil.sistemaId}</p>}
+              </div>
+
+              <div className="form-field">
                 <label htmlFor="perfil-nome">
                   Nome do perfil <b>*</b>
                 </label>
@@ -635,6 +746,25 @@ export default function Configuracoes() {
                   <option value="Gerencial">Gerencial (Supervisão e equipes)</option>
                   <option value="Operacional">Operacional (Uso rotineiro)</option>
                   <option value="Consulta">Consulta (Apenas leitura)</option>
+                </select>
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="perfil-status">Status</label>
+                <select
+                  id="perfil-status"
+                  className="field"
+                  value={formPerfil.statusId ?? 1}
+                  onChange={(e) =>
+                    setFormPerfil((atual) => ({
+                      ...atual,
+                      statusId: Number(e.target.value) as StatusId,
+                    }))
+                  }
+                >
+                  <option value={1}>Ativo (1)</option>
+                  <option value={2}>Inativo (2)</option>
+                  <option value={3}>Bloqueado (3)</option>
                 </select>
               </div>
 

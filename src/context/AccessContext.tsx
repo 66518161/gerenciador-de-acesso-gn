@@ -17,6 +17,7 @@ import type {
   SistemaInput,
   Usuario,
   UsuarioInput,
+  UsuarioSistemaItem,
 } from '../types/access'
 
 interface AccessContextValue {
@@ -86,18 +87,19 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
 
   const estatisticas = useMemo<Estatisticas>(() => {
     const acessosConcedidos = usuarios.reduce(
-      (total, usuario) => total + usuario.sistemasIds.length,
+      (total, usuario) => total + (usuario.sistemasIds?.length ?? 0),
       0,
     )
     const acessosPorSistema = sistemas
       .map((sistema) => ({
         sistema,
-        quantidade: usuarios.filter((usuario) => usuario.sistemasIds.includes(sistema.id)).length,
+        quantidade: usuarios.filter((usuario) => usuario.sistemasIds?.includes(sistema.id)).length,
       }))
       .sort((a, b) => b.quantidade - a.quantidade || a.sistema.nome.localeCompare(b.sistema.nome))
 
-    const departamentos = usuarios.reduce<Record<string, number>>((acc, usuario) => {
-      acc[usuario.departamento] = (acc[usuario.departamento] ?? 0) + 1
+    const contagemDepartamentos = usuarios.reduce<Record<string, number>>((acc, usuario) => {
+      const nomeDept = usuario.departamento || 'Sem departamento'
+      acc[nomeDept] = (acc[nomeDept] ?? 0) + 1
       return acc
     }, {})
 
@@ -106,24 +108,37 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
       return acc
     }, {})
 
-    const ultimosAcessos = atribuicoes
-      .map((atribuicao) => ({
-        atribuicao,
-        usuario: usuarios.find((item) => item.id === atribuicao.usuarioId),
-        sistema: sistemas.find((item) => item.id === atribuicao.sistemaId),
-      }))
-      .filter((item): item is { atribuicao: Atribuicao; usuario: Usuario; sistema: Sistema } =>
-        Boolean(item.usuario && item.sistema),
-      )
-      .sort((a, b) => new Date(b.atribuicao.data).getTime() - new Date(a.atribuicao.data).getTime())
+    type UltimoAcessoItem = {
+      atribuicao: Atribuicao
+      usuario: Usuario
+      sistema: Sistema
+      perfil?: PerfilAcesso
+    }
+
+    const ultimosAcessos: UltimoAcessoItem[] = []
+    for (const atribuicao of atribuicoes) {
+      const usuario = usuarios.find((item) => item.id === atribuicao.usuarioId)
+      const sistema = sistemas.find((item) => item.id === atribuicao.sistemaId)
+      if (usuario && sistema) {
+        const perfil = atribuicao.perfilId
+          ? perfis.find((p) => p.id === atribuicao.perfilId)
+          : undefined
+        ultimosAcessos.push({ atribuicao, usuario, sistema, perfil })
+      }
+    }
+    ultimosAcessos.sort(
+      (a, b) => new Date(b.atribuicao.data).getTime() - new Date(a.atribuicao.data).getTime(),
+    )
 
     return {
-      sistemasAtivos: sistemas.length,
+      sistemasAtivos: sistemas.filter((s) => s.statusId === 1).length,
       usuariosCadastrados: usuarios.length,
       acessosConcedidos,
-      semAtribuicao: usuarios.filter((usuario) => usuario.sistemasIds.length === 0).length,
+      semAtribuicao: usuarios.filter(
+        (usuario) => !usuario.sistemasIds || usuario.sistemasIds.length === 0,
+      ).length,
       acessosPorSistema,
-      usuariosPorDepartamento: Object.entries(departamentos)
+      usuariosPorDepartamento: Object.entries(contagemDepartamentos)
         .map(([departamento, quantidade]) => ({ departamento, quantidade }))
         .sort((a, b) => b.quantidade - a.quantidade),
       sistemasPorArea: Object.entries(areas)
@@ -131,7 +146,7 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
         .sort((a, b) => b.quantidade - a.quantidade || a.area.localeCompare(b.area)),
       ultimosAcessos,
     }
-  }, [atribuicoes, sistemas, usuarios])
+  }, [atribuicoes, perfis, sistemas, usuarios])
 
   const autenticar = (email: string, senha: string) => {
     const encontrado = usuarios.find(
@@ -168,17 +183,22 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
   }
 
   const criarDepartamento = (dados: DepartamentoInput) => {
+    const agora = new Date().toISOString()
     const departamento: Departamento = {
       id: novoId('dept'),
       nome: dados.nome.trim(),
       descricao: dados.descricao?.trim(),
-      criadoEm: new Date().toISOString(),
+      statusId: dados.statusId ?? 1,
+      dataCriacao: agora,
+      dataAlteracao: null,
+      criadoEm: agora,
     }
     setDepartamentos((atuais) => [...atuais, departamento])
     return departamento
   }
 
   const atualizarDepartamento = (id: string, dados: DepartamentoInput) => {
+    const agora = new Date().toISOString()
     const deptAnterior = departamentos.find((d) => d.id === id)
     setDepartamentos((atuais) =>
       atuais.map((d) =>
@@ -187,6 +207,8 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
               ...d,
               nome: dados.nome.trim(),
               descricao: dados.descricao?.trim(),
+              statusId: dados.statusId ?? d.statusId ?? 1,
+              dataAlteracao: agora,
             }
           : d,
       ),
@@ -226,26 +248,35 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
   }
 
   const criarPerfil = (dados: PerfilInput) => {
+    const agora = new Date().toISOString()
     const perfil: PerfilAcesso = {
       id: novoId('perfil'),
+      sistemaId: dados.sistemaId,
       nome: dados.nome.trim(),
       descricao: dados.descricao?.trim(),
       nivel: dados.nivel?.trim() || 'Operacional',
-      criadoEm: new Date().toISOString(),
+      statusId: dados.statusId ?? 1,
+      dataCriacao: agora,
+      dataAlteracao: null,
+      criadoEm: agora,
     }
     setPerfis((atuais) => [...atuais, perfil])
     return perfil
   }
 
   const atualizarPerfil = (id: string, dados: PerfilInput) => {
+    const agora = new Date().toISOString()
     setPerfis((atuais) =>
       atuais.map((p) =>
         p.id === id
           ? {
               ...p,
+              sistemaId: dados.sistemaId || p.sistemaId,
               nome: dados.nome.trim(),
               descricao: dados.descricao?.trim(),
               nivel: dados.nivel?.trim() || p.nivel,
+              statusId: dados.statusId ?? p.statusId ?? 1,
+              dataAlteracao: agora,
             }
           : p,
       ),
@@ -269,18 +300,32 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
   }
 
   const criarSistema = (dados: SistemaInput) => {
+    const agora = new Date().toISOString()
     const sistema: Sistema = {
       ...dados,
+      statusId: dados.statusId ?? 1,
       id: novoId('sistema'),
-      criadoEm: new Date().toISOString(),
+      dataCriacao: agora,
+      dataAlteracao: null,
+      criadoEm: agora,
     }
     setSistemas((atuais) => [...atuais, sistema])
     return sistema
   }
 
   const atualizarSistema = (id: string, dados: SistemaInput) => {
+    const agora = new Date().toISOString()
     setSistemas((atuais) =>
-      atuais.map((sistema) => (sistema.id === id ? { ...sistema, ...dados } : sistema)),
+      atuais.map((sistema) =>
+        sistema.id === id
+          ? {
+              ...sistema,
+              ...dados,
+              statusId: dados.statusId ?? sistema.statusId ?? 1,
+              dataAlteracao: agora,
+            }
+          : sistema,
+      ),
     )
   }
 
@@ -301,16 +346,62 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
     const momento = new Date().toISOString()
     setAtribuicoes((atuais) => [
       ...atuais,
-      ...novos.map((sistemaId) => ({ usuarioId, sistemaId, data: momento })),
+      ...novos.map((sistemaId) => ({
+        usuarioId,
+        sistemaId,
+        statusId: 1 as const,
+        dataInicio: momento,
+        dataCriacao: momento,
+        data: momento,
+      })),
     ])
   }
 
   const criarUsuario = (dados: UsuarioInput) => {
+    const agora = new Date().toISOString()
+    const departamentoEncontrado = dados.departamentoId
+      ? departamentos.find((d) => d.id === dados.departamentoId)
+      : departamentos.find((d) => d.nome.toLowerCase() === (dados.departamento ?? '').toLowerCase())
+    const departamentoNome = departamentoEncontrado?.nome ?? dados.departamento ?? ''
+    const departamentoId = departamentoEncontrado?.id ?? dados.departamentoId ?? null
+
+    const vinculosCompletos: UsuarioSistemaItem[] = dados.vinculos
+      ? dados.vinculos.map((v) => ({
+          sistemaId: v.sistemaId,
+          perfilId: v.perfilId,
+          statusId: v.statusId ?? 1,
+          dataInicio: v.dataInicio ?? agora,
+          dataExpiracao: v.dataExpiracao ?? null,
+          concedidoPor: usuarioLogadoId,
+          dataCriacao: agora,
+          dataAlteracao: null,
+        }))
+      : dados.sistemasIds.map((sId) => ({
+          sistemaId: sId,
+          perfilId: dados.perfilId,
+          statusId: 1 as const,
+          dataInicio: agora,
+          dataExpiracao: null,
+          concedidoPor: usuarioLogadoId,
+          dataCriacao: agora,
+          dataAlteracao: null,
+        }))
+
     const usuario: Usuario = {
-      ...dados,
-      sistemasIds: [...dados.sistemasIds],
       id: novoId('usuario'),
-      criadoEm: new Date().toISOString(),
+      nome: dados.nome,
+      email: dados.email,
+      departamentoId,
+      departamento: departamentoNome,
+      statusId: dados.statusId ?? 1,
+      idMicrosoft: dados.idMicrosoft || null,
+      senha: dados.senha || 'demo2024',
+      sistemasIds: [...dados.sistemasIds],
+      vinculos: vinculosCompletos,
+      perfilId: dados.perfilId,
+      dataCriacao: agora,
+      dataAlteracao: null,
+      criadoEm: agora,
     }
     setUsuarios((atuais) => [...atuais, usuario])
     registrarNovosAcessos(usuario.id, [], usuario.sistemasIds)
@@ -318,20 +409,75 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
   }
 
   const atualizarUsuario = (id: string, dados: UsuarioInput) => {
+    const agora = new Date().toISOString()
     const anterior = usuarios.find((usuario) => usuario.id === id)
     if (anterior) registrarNovosAcessos(id, anterior.sistemasIds, dados.sistemasIds)
+
+    const departamentoEncontrado = dados.departamentoId
+      ? departamentos.find((d) => d.id === dados.departamentoId)
+      : dados.departamento
+        ? departamentos.find(
+            (d) => d.nome.toLowerCase() === (dados.departamento ?? '').toLowerCase(),
+          )
+        : undefined
+
     setUsuarios((atuais) =>
-      atuais.map((usuario) =>
-        usuario.id === id
-          ? {
-              ...usuario,
-              ...dados,
-              perfilId: dados.perfilId !== undefined ? dados.perfilId : usuario.perfilId,
-              senha: dados.senha || usuario.senha,
-              sistemasIds: [...dados.sistemasIds],
-            }
-          : usuario,
-      ),
+      atuais.map((usuario) => {
+        if (usuario.id !== id) return usuario
+
+        const departamentoNome = departamentoEncontrado
+          ? departamentoEncontrado.nome
+          : dados.departamento !== undefined
+            ? dados.departamento
+            : usuario.departamento
+        const departamentoId = departamentoEncontrado
+          ? departamentoEncontrado.id
+          : dados.departamentoId !== undefined
+            ? dados.departamentoId
+            : usuario.departamentoId
+
+        const vinculosAtualizados: UsuarioSistemaItem[] = dados.vinculos
+          ? dados.vinculos.map((v) => ({
+              sistemaId: v.sistemaId,
+              perfilId: v.perfilId,
+              statusId: v.statusId ?? 1,
+              dataInicio: v.dataInicio ?? agora,
+              dataExpiracao: v.dataExpiracao ?? null,
+              concedidoPor: usuarioLogadoId,
+              dataCriacao: agora,
+              dataAlteracao: null,
+            }))
+          : dados.sistemasIds.map((sId) => {
+              const vinculoAntigo = usuario.vinculos?.find((v) => v.sistemaId === sId)
+              return (
+                vinculoAntigo ?? {
+                  sistemaId: sId,
+                  perfilId: dados.perfilId ?? usuario.perfilId,
+                  statusId: 1 as const,
+                  dataInicio: agora,
+                  dataExpiracao: null,
+                  concedidoPor: usuarioLogadoId,
+                  dataCriacao: agora,
+                  dataAlteracao: null,
+                }
+              )
+            })
+
+        return {
+          ...usuario,
+          nome: dados.nome,
+          email: dados.email,
+          departamento: departamentoNome,
+          departamentoId,
+          statusId: dados.statusId ?? usuario.statusId ?? 1,
+          idMicrosoft: dados.idMicrosoft !== undefined ? dados.idMicrosoft : usuario.idMicrosoft,
+          perfilId: dados.perfilId !== undefined ? dados.perfilId : usuario.perfilId,
+          senha: dados.senha || usuario.senha,
+          sistemasIds: [...dados.sistemasIds],
+          vinculos: vinculosAtualizados,
+          dataAlteracao: agora,
+        }
+      }),
     )
   }
 
@@ -349,9 +495,17 @@ export function AccessProvider({ children }: { children: React.ReactNode }) {
         item.id === usuarioId ? { ...item, sistemasIds: [...item.sistemasIds, sistemaId] } : item,
       ),
     )
+    const momento = new Date().toISOString()
     setAtribuicoes((atuais) => [
       ...atuais,
-      { usuarioId, sistemaId, data: new Date().toISOString() },
+      {
+        usuarioId,
+        sistemaId,
+        statusId: 1 as const,
+        dataInicio: momento,
+        dataCriacao: momento,
+        data: momento,
+      },
     ])
   }
 

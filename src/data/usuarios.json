@@ -1,123 +1,387 @@
 [
   {
     "id": "usuario-ana-souza",
+    "usuarioId": 1,
     "nome": "Ana Souza",
     "email": "ana.souza@empresa.com",
+    "departamentoId": "dept-ti",
     "departamento": "TI",
-    "perfilId": "perfil-administrador",
+    "statusId": 1,
+    "idMicrosoft": "6a9b407a-d98c-48c2-bb50-a9214ebc2980",
     "senha": "vibra123",
-    "idMicrosoft": "ana.souza@empresa.com",
+    "ultimoLogin": "2025-06-18T14:32:00.000Z",
+    "dataCriacao": "2024-01-10T08:30:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-helpdesk", "sistema-intranet", "sistema-bi"],
-    "criadoEm": "2024-01-10T08:30:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-helpdesk",
+        "perfilId": "perfil-helpdesk-admin",
+        "statusId": 1,
+        "dataInicio": "2024-01-10T08:30:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": null
+      },
+      {
+        "sistemaId": "sistema-intranet",
+        "perfilId": "perfil-intranet-editor",
+        "statusId": 1,
+        "dataInicio": "2024-01-10T08:30:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": null
+      },
+      {
+        "sistemaId": "sistema-bi",
+        "perfilId": "perfil-bi-analista",
+        "statusId": 1,
+        "dataInicio": "2024-01-10T08:30:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": null
+      }
+    ]
   },
   {
     "id": "usuario-bruno-lima",
+    "usuarioId": 2,
     "nome": "Bruno Lima",
     "email": "bruno.lima@empresa.com",
+    "departamentoId": "dept-financeiro",
     "departamento": "Financeiro",
-    "perfilId": "perfil-gestor",
-    "senha": "demo2024",
+    "statusId": 1,
     "idMicrosoft": "c1f5b55e-4f51-4e7b-939d-0d58f316d615",
+    "senha": "demo2024",
+    "ultimoLogin": "2025-06-18T11:08:00.000Z",
+    "dataCriacao": "2024-01-23T10:20:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-financeiro", "sistema-compras", "sistema-intranet"],
-    "criadoEm": "2024-01-23T10:20:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-financeiro",
+        "perfilId": "perfil-financeiro-admin",
+        "statusId": 1,
+        "dataInicio": "2024-01-23T10:20:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-compras",
+        "perfilId": "perfil-compras-admin",
+        "statusId": 1,
+        "dataInicio": "2024-01-23T10:20:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-intranet",
+        "perfilId": "perfil-intranet-leitor",
+        "statusId": 1,
+        "dataInicio": "2024-01-23T10:20:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      }
+    ]
   },
   {
     "id": "usuario-camila-rocha",
+    "usuarioId": 3,
     "nome": "Camila Rocha",
     "email": "camila.rocha@empresa.com",
+    "departamentoId": "dept-rh",
     "departamento": "RH",
-    "perfilId": "perfil-gestor",
+    "statusId": 1,
+    "idMicrosoft": "e2a1b94d-5c6e-47f2-98ab-3c4d5e6f7a8b",
     "senha": "demo2024",
-    "idMicrosoft": "camila.rocha@empresa.com",
+    "ultimoLogin": "2025-06-17T16:45:00.000Z",
+    "dataCriacao": "2024-02-05T14:00:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-rh", "sistema-ferias", "sistema-beneficios", "sistema-intranet"],
-    "criadoEm": "2024-02-05T14:00:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-rh",
+        "perfilId": "perfil-rh-gestor",
+        "statusId": 1,
+        "dataInicio": "2024-02-05T14:00:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-ferias",
+        "perfilId": "perfil-ferias-aprovador",
+        "statusId": 1,
+        "dataInicio": "2024-02-05T14:00:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-beneficios",
+        "perfilId": "perfil-beneficios-gestor",
+        "statusId": 1,
+        "dataInicio": "2024-02-05T14:00:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-intranet",
+        "perfilId": "perfil-intranet-leitor",
+        "statusId": 1,
+        "dataInicio": "2024-02-05T14:00:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      }
+    ]
   },
   {
     "id": "usuario-diego-martins",
+    "usuarioId": 4,
     "nome": "Diego Martins",
     "email": "diego.martins@empresa.com",
+    "departamentoId": "dept-comercial",
     "departamento": "Comercial",
-    "perfilId": "perfil-colaborador",
-    "senha": "demo2024",
+    "statusId": 1,
     "idMicrosoft": "7a90cc7b-a5d8-4f24-80fd-c96aaacf588c",
+    "senha": "demo2024",
+    "ultimoLogin": "2025-06-16T10:40:00.000Z",
+    "dataCriacao": "2024-02-16T09:10:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-intranet", "sistema-bi"],
-    "criadoEm": "2024-02-16T09:10:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-intranet",
+        "perfilId": "perfil-intranet-leitor",
+        "statusId": 1,
+        "dataInicio": "2024-02-16T09:10:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-bi",
+        "perfilId": "perfil-bi-leitor",
+        "statusId": 1,
+        "dataInicio": "2024-02-16T09:10:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      }
+    ]
   },
   {
     "id": "usuario-eduarda-alves",
+    "usuarioId": 5,
     "nome": "Eduarda Alves",
     "email": "eduarda.alves@empresa.com",
+    "departamentoId": "dept-operacoes",
     "departamento": "Operações",
-    "perfilId": "perfil-colaborador",
+    "statusId": 1,
+    "idMicrosoft": "1c2d3e4f-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
     "senha": "demo2024",
-    "idMicrosoft": "eduarda.alves@empresa.com",
+    "ultimoLogin": "2025-06-13T13:55:00.000Z",
+    "dataCriacao": "2024-03-01T15:45:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-compras", "sistema-helpdesk", "sistema-intranet"],
-    "criadoEm": "2024-03-01T15:45:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-compras",
+        "perfilId": "perfil-compras-comprador",
+        "statusId": 1,
+        "dataInicio": "2024-03-01T15:45:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-helpdesk",
+        "perfilId": "perfil-helpdesk-tecnico",
+        "statusId": 1,
+        "dataInicio": "2024-03-01T15:45:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-intranet",
+        "perfilId": "perfil-intranet-leitor",
+        "statusId": 1,
+        "dataInicio": "2024-03-01T15:45:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      }
+    ]
   },
   {
     "id": "usuario-felipe-costa",
+    "usuarioId": 6,
     "nome": "Felipe Costa",
     "email": "felipe.costa@empresa.com",
+    "departamentoId": "dept-ti",
     "departamento": "TI",
-    "perfilId": "perfil-administrador",
-    "senha": "demo2024",
+    "statusId": 1,
     "idMicrosoft": "0fe1d4dd-104f-4c49-b699-ae32c93d2671",
+    "senha": "demo2024",
+    "ultimoLogin": "2025-06-17T09:21:00.000Z",
+    "dataCriacao": "2024-03-13T11:25:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-helpdesk", "sistema-bi", "sistema-intranet", "sistema-compras"],
-    "criadoEm": "2024-03-13T11:25:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-helpdesk",
+        "perfilId": "perfil-helpdesk-admin",
+        "statusId": 1,
+        "dataInicio": "2024-03-13T11:25:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-bi",
+        "perfilId": "perfil-bi-analista",
+        "statusId": 1,
+        "dataInicio": "2024-03-13T11:25:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-intranet",
+        "perfilId": "perfil-intranet-leitor",
+        "statusId": 1,
+        "dataInicio": "2024-03-13T11:25:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      },
+      {
+        "sistemaId": "sistema-compras",
+        "perfilId": "perfil-compras-comprador",
+        "statusId": 1,
+        "dataInicio": "2024-03-13T11:25:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-ana-souza"
+      }
+    ]
   },
   {
     "id": "usuario-gabriela-nunes",
+    "usuarioId": 7,
     "nome": "Gabriela Nunes",
     "email": "gabriela.nunes@empresa.com",
+    "departamentoId": "dept-rh",
     "departamento": "RH",
-    "perfilId": "perfil-colaborador",
+    "statusId": 1,
+    "idMicrosoft": "2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e",
     "senha": "demo2024",
-    "idMicrosoft": "gabriela.nunes@empresa.com",
+    "ultimoLogin": "2025-06-16T15:14:00.000Z",
+    "dataCriacao": "2024-03-28T08:55:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-rh", "sistema-ferias", "sistema-beneficios"],
-    "criadoEm": "2024-03-28T08:55:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-rh",
+        "perfilId": "perfil-rh-leitura",
+        "statusId": 1,
+        "dataInicio": "2024-03-28T08:55:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-camila-rocha"
+      },
+      {
+        "sistemaId": "sistema-ferias",
+        "perfilId": "perfil-ferias-colaborador",
+        "statusId": 1,
+        "dataInicio": "2024-03-28T08:55:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-camila-rocha"
+      },
+      {
+        "sistemaId": "sistema-beneficios",
+        "perfilId": "perfil-beneficios-usuario",
+        "statusId": 1,
+        "dataInicio": "2024-03-28T08:55:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-camila-rocha"
+      }
+    ]
   },
   {
     "id": "usuario-henrique-melo",
+    "usuarioId": 8,
     "nome": "Henrique Melo",
     "email": "henrique.melo@empresa.com",
+    "departamentoId": "dept-financeiro",
     "departamento": "Financeiro",
-    "perfilId": "perfil-colaborador",
-    "senha": "demo2024",
+    "statusId": 1,
     "idMicrosoft": "f49ac628-7548-4b18-bd38-e71440b97db6",
+    "senha": "demo2024",
+    "ultimoLogin": "2025-06-12T17:02:00.000Z",
+    "dataCriacao": "2024-04-09T13:40:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-financeiro", "sistema-bi"],
-    "criadoEm": "2024-04-09T13:40:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-financeiro",
+        "perfilId": "perfil-financeiro-analista",
+        "statusId": 1,
+        "dataInicio": "2024-04-09T13:40:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-bruno-lima"
+      },
+      {
+        "sistemaId": "sistema-bi",
+        "perfilId": "perfil-bi-leitor",
+        "statusId": 1,
+        "dataInicio": "2024-04-09T13:40:00.000Z",
+        "dataExpiracao": null,
+        "concedidoPor": "usuario-bruno-lima"
+      }
+    ]
   },
   {
     "id": "usuario-isabela-ramos",
+    "usuarioId": 9,
     "nome": "Isabela Ramos",
     "email": "isabela.ramos@empresa.com",
+    "departamentoId": "dept-comercial",
     "departamento": "Comercial",
-    "perfilId": "perfil-colaborador",
+    "statusId": 2,
+    "idMicrosoft": "3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
     "senha": "demo2024",
-    "idMicrosoft": "isabela.ramos@empresa.com",
+    "ultimoLogin": "2025-06-11T08:28:00.000Z",
+    "dataCriacao": "2024-04-22T10:05:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": ["sistema-intranet"],
-    "criadoEm": "2024-04-22T10:05:00.000Z"
+    "vinculos": [
+      {
+        "sistemaId": "sistema-intranet",
+        "perfilId": "perfil-intranet-leitor",
+        "statusId": 2,
+        "dataInicio": "2024-04-22T10:05:00.000Z",
+        "dataExpiracao": "2025-12-31T23:59:59.000Z",
+        "concedidoPor": "usuario-ana-souza"
+      }
+    ]
   },
   {
     "id": "usuario-joao-pires",
+    "usuarioId": 10,
     "nome": "João Pires",
     "email": "joao.pires@empresa.com",
+    "departamentoId": "dept-operacoes",
     "departamento": "Operações",
-    "perfilId": "perfil-colaborador",
-    "senha": "demo2024",
+    "statusId": 1,
     "idMicrosoft": "d2268b42-8fc7-461f-a1fa-0a5ea36e4314",
+    "senha": "demo2024",
+    "ultimoLogin": null,
+    "dataCriacao": "2024-05-03T16:15:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": [],
-    "criadoEm": "2024-05-03T16:15:00.000Z"
+    "vinculos": []
   },
   {
     "id": "usuario-larissa-freitas",
+    "usuarioId": 11,
     "nome": "Larissa Freitas",
     "email": "larissa.freitas@empresa.com",
+    "departamentoId": "dept-operacoes",
     "departamento": "Operações",
-    "perfilId": "perfil-colaborador",
+    "statusId": 3,
+    "idMicrosoft": "4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a",
     "senha": "demo2024",
-    "idMicrosoft": "larissa.freitas@empresa.com",
+    "ultimoLogin": null,
+    "dataCriacao": "2024-05-14T09:50:00.000Z",
+    "dataAlteracao": null,
     "sistemasIds": [],
-    "criadoEm": "2024-05-14T09:50:00.000Z"
+    "vinculos": []
   }
 ]

@@ -1,58 +1,90 @@
 [
   {
     "id": "sistema-rh",
+    "sistemaId": 1,
     "nome": "Portal RH",
-    "url": "https://rh.empresa.com",
+    "descricao": "Plataforma centralizada de gestão de pessoas, ponto e holerites dos colaboradores.",
+    "url": "https://rh.vibra.com.br",
     "area": "Recursos Humanos",
-    "criadoEm": "2024-01-15T09:00:00.000Z"
+    "statusId": 1,
+    "dataCriacao": "2024-01-15T09:00:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "sistema-compras",
+    "sistemaId": 2,
     "nome": "Portal de Compras",
-    "url": "https://compras.empresa.com",
+    "descricao": "Gestão de requisições de compras, cotações com fornecedores e aprovações de suprimentos.",
+    "url": "https://compras.vibra.com.br",
     "area": "Suprimentos",
-    "criadoEm": "2024-02-08T13:30:00.000Z"
+    "statusId": 1,
+    "dataCriacao": "2024-02-08T13:30:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "sistema-helpdesk",
+    "sistemaId": 3,
     "nome": "Central de Helpdesk",
-    "url": "https://helpdesk.empresa.com",
+    "descricao": "Atendimento de chamados de tecnologia, incidentes e suporte aos usuários internos.",
+    "url": "https://helpdesk.vibra.com.br",
     "area": "TI",
-    "criadoEm": "2024-02-21T10:15:00.000Z"
+    "statusId": 1,
+    "dataCriacao": "2024-02-21T10:15:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "sistema-intranet",
+    "sistemaId": 4,
     "nome": "Intranet Corporativa",
-    "url": "https://intranet.empresa.com",
+    "descricao": "Canal oficial de comunicação interna, notícias da companhia, avisos e documentos institucionais.",
+    "url": "https://intranet.vibra.com.br",
     "area": "Comunicação",
-    "criadoEm": "2024-03-04T08:45:00.000Z"
+    "statusId": 1,
+    "dataCriacao": "2024-03-04T08:45:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "sistema-financeiro",
+    "sistemaId": 5,
     "nome": "Portal Financeiro",
-    "url": "https://financeiro.empresa.com",
+    "descricao": "Controle de fluxo de caixa, pagamentos, conciliação bancária e relatórios fiscais.",
+    "url": "https://financeiro.vibra.com.br",
     "area": "Financeiro",
-    "criadoEm": "2024-03-19T14:20:00.000Z"
+    "statusId": 1,
+    "dataCriacao": "2024-03-19T14:20:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "sistema-ferias",
+    "sistemaId": 6,
     "nome": "Gestão de Férias",
-    "url": "https://ferias.empresa.com",
+    "descricao": "Agendamento, aprovação por gestores e acompanhamento de períodos de descanso.",
+    "url": "https://ferias.vibra.com.br",
     "area": "Recursos Humanos",
-    "criadoEm": "2024-04-02T11:10:00.000Z"
+    "statusId": 1,
+    "dataCriacao": "2024-04-02T11:10:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "sistema-bi",
+    "sistemaId": 7,
     "nome": "BI Interno",
-    "url": "https://bi.empresa.com",
+    "descricao": "Dashboards de Business Intelligence, volumetria de vendas e indicadores de desempenho.",
+    "url": "https://bi.vibra.com.br",
     "area": "Dados",
-    "criadoEm": "2024-04-17T16:00:00.000Z"
+    "statusId": 1,
+    "dataCriacao": "2024-04-17T16:00:00.000Z",
+    "dataAlteracao": null
   },
   {
     "id": "sistema-beneficios",
+    "sistemaId": 8,
     "nome": "Portal de Benefícios",
-    "url": "https://beneficios.empresa.com",
+    "descricao": "Gestão de planos de saúde, odontológico, vale alimentação e convênios corporativos.",
+    "url": "https://beneficios.vibra.com.br",
     "area": "Recursos Humanos",
-    "criadoEm": "2024-05-06T09:35:00.000Z"
+    "statusId": 1,
+    "dataCriacao": "2024-05-06T09:35:00.000Z",
+    "dataAlteracao": null
   }
 ]

@@ -139,12 +139,14 @@ export default function Dashboard() {
 
   const exportarCsv = () => {
     const linhas = [
-      ['Usuário', 'E-mail', 'Sistema', 'Área', 'Concedido em'],
-      ...estatisticas.ultimosAcessos.map(({ usuario, sistema, atribuicao }) => [
+      ['Usuário', 'E-mail', 'ID Microsoft (GUID)', 'Sistema', 'Área', 'Perfil', 'Concedido em'],
+      ...estatisticas.ultimosAcessos.map(({ usuario, sistema, atribuicao, perfil }) => [
         usuario.nome,
         usuario.email,
+        usuario.idMicrosoft || '',
         sistema.nome,
         sistema.area,
+        perfil?.nome || 'Padrão',
         formatarData(atribuicao.data, true),
       ]),
     ]
@@ -309,24 +311,33 @@ export default function Dashboard() {
             </button>
           </div>
           <div className="recent-list">
-            {estatisticas.ultimosAcessos.slice(0, 5).map(({ atribuicao, usuario, sistema }) => (
-              <div
-                className="recent-row"
-                key={`${atribuicao.usuarioId}-${atribuicao.sistemaId}-${atribuicao.data}`}
-              >
-                <span className="avatar avatar--small">{iniciais(usuario.nome)}</span>
-                <span className="recent-copy">
-                  <strong>{usuario.nome}</strong>
-                  <small>
-                    recebeu acesso a <b>{sistema.nome}</b>
-                  </small>
-                </span>
-                <span className="recent-date">
-                  <CheckCircle2 size={14} />
-                  {formatarData(atribuicao.data)}
-                </span>
-              </div>
-            ))}
+            {estatisticas.ultimosAcessos
+              .slice(0, 5)
+              .map(({ atribuicao, usuario, sistema, perfil }) => (
+                <div
+                  className="recent-row"
+                  key={`${atribuicao.usuarioId}-${atribuicao.sistemaId}-${atribuicao.data}`}
+                >
+                  <span className="avatar avatar--small">{iniciais(usuario.nome)}</span>
+                  <span className="recent-copy">
+                    <div className="flex items-center gap-2">
+                      <strong>{usuario.nome}</strong>
+                      {perfil && (
+                        <span className="text-[10px] bg-[var(--color-primary-soft)] text-[var(--color-primary)] px-1.5 py-0.2 rounded font-medium">
+                          {perfil.nome}
+                        </span>
+                      )}
+                    </div>
+                    <small>
+                      recebeu acesso a <b>{sistema.nome}</b>
+                    </small>
+                  </span>
+                  <span className="recent-date">
+                    <CheckCircle2 size={14} />
+                    {formatarData(atribuicao.data)}
+                  </span>
+                </div>
+              ))}
           </div>
         </article>
 

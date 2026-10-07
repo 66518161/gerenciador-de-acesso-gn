@@ -34,7 +34,8 @@ export default function Login() {
     event.preventDefault()
     setErro('')
     setCarregando(true)
-    requestAnimationFrame(() => {
+
+    try {
       const usuario = autenticar(email, senha)
       setCarregando(false)
       if (!usuario) {
@@ -48,8 +49,12 @@ export default function Login() {
         className: 'welcome-toast',
         duration: 3500,
       })
-      navigate('/')
-    })
+      navigate('/', { replace: true })
+    } catch (err) {
+      setCarregando(false)
+      setErro('Erro ao processar login. Tente novamente.')
+      setSacudir(true)
+    }
   }
 
   const loginGoogle = () => {
@@ -152,10 +157,24 @@ export default function Login() {
           </p>
         </form>
 
-        <p className="demo-hint">
-          Ambiente de demonstração · <span>{usuarioDemo?.email}</span> · senha{' '}
-          <span>{usuarioDemo?.senha}</span>
-        </p>
+        <div className="demo-hint">
+          <p>
+            Ambiente de demonstração · <span>{usuarioDemo?.email}</span> · senha{' '}
+            <span>{usuarioDemo?.senha}</span>
+          </p>
+          <button
+            type="button"
+            className="text-xs text-[var(--color-primary)] hover:underline mt-1 font-medium cursor-pointer"
+            onClick={() => {
+              if (usuarioDemo) {
+                setEmail(usuarioDemo.email)
+                setSenha(usuarioDemo.senha ?? '')
+              }
+            }}
+          >
+            Preencher credenciais demo
+          </button>
+        </div>
       </main>
 
       <Dialog open={esqueciAberto} onOpenChange={setEsqueciAberto}>

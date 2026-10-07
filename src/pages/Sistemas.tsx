@@ -27,9 +27,9 @@ import { useAccess } from '../context/AccessContext'
 import { useToast } from '../hooks/use-toast'
 import { AreaBadge, AreaSelectDropdown, getAreaIcon } from '../lib/areaIcons'
 import { classePorTexto, pluralizar } from '../lib/format'
-import type { Sistema, SistemaInput } from '../types/access'
+import { STATUS_MAP, type Sistema, type SistemaInput, type StatusId } from '../types/access'
 
-const formVazio: SistemaInput = { nome: '', url: '', area: '' }
+const formVazio: SistemaInput = { nome: '', url: '', area: '', descricao: '', statusId: 1 }
 
 export default function Sistemas() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -37,6 +37,7 @@ export default function Sistemas() {
   const { sistemas, usuarios, criarSistema, atualizarSistema, excluirSistema } = useAccess()
   const [busca, setBusca] = useState(() => searchParams.get('q') ?? '')
   const [area, setArea] = useState(() => searchParams.get('area') ?? 'todas')
+  const [statusFiltro, setStatusFiltro] = useState<string>('todos')
   const [modalAberto, setModalAberto] = useState(false)
   const [editando, setEditando] = useState<Sistema | null>(null)
   const [form, setForm] = useState<SistemaInput>(formVazio)
@@ -47,8 +48,10 @@ export default function Sistemas() {
   useEffect(() => {
     const parametroArea = searchParams.get('area')
     const parametroBusca = searchParams.get('q')
+    const parametroStatus = searchParams.get('status')
     if (parametroArea) setArea(parametroArea)
     if (parametroBusca) setBusca(parametroBusca)
+    if (parametroStatus) setStatusFiltro(parametroStatus)
   }, [searchParams])
 
   const areas = useMemo(
@@ -60,10 +63,15 @@ export default function Sistemas() {
     const termo = busca.trim().toLocaleLowerCase('pt-BR')
     return sistemas.filter((sistema) => {
       const correspondeBusca =
-        !termo || `${sistema.nome} ${sistema.url}`.toLocaleLowerCase('pt-BR').includes(termo)
-      return correspondeBusca && (area === 'todas' || sistema.area === area)
+        !termo ||
+        `${sistema.nome} ${sistema.url} ${sistema.descricao || ''}`
+          .toLocaleLowerCase('pt-BR')
+          .includes(termo)
+      const correspondeStatus =
+        statusFiltro === 'todos' || String(sistema.statusId ?? 1) === statusFiltro
+      return correspondeBusca && (area === 'todas' || sistema.area === area) && correspondeStatus
     })
-  }, [area, busca, sistemas])
+  }, [area, busca, sistemas, statusFiltro])
 
   const abrirNovo = () => {
     setEditando(null)
@@ -75,7 +83,13 @@ export default function Sistemas() {
 
   const abrirEdicao = (sistema: Sistema) => {
     setEditando(sistema)
-    setForm({ nome: sistema.nome, url: sistema.url, area: sistema.area })
+    setForm({
+      nome: sistema.nome,
+      url: sistema.url,
+      area: sistema.area,
+      descricao: sistema.descricao || '',
+      statusId: sistema.statusId ?? 1,
+    })
     setErros({})
     setNovaArea(!areas.includes(sistema.area))
     setModalAberto(true)
@@ -102,7 +116,13 @@ export default function Sistemas() {
   const salvar = (event: React.FormEvent) => {
     event.preventDefault()
     if (!validar()) return
-    const dados = { nome: form.nome.trim(), url: form.url.trim(), area: form.area.trim() }
+    const dados: SistemaInput = {
+      nome: form.nome.trim(),
+      url: form.url.trim(),
+      area: form.area.trim(),
+      descricao: form.descricao?.trim() || undefined,
+      statusId: (Number(form.statusId) || 1) as StatusId,
+    }
     if (editando) {
       atualizarSistema(editando.id, dados)
       toast({
@@ -135,6 +155,7 @@ export default function Sistemas() {
   const limparFiltros = () => {
     setBusca('')
     setArea('todas')
+    setStatusFiltro('todos')
     setSearchParams({})
   }
 
@@ -157,7 +178,7 @@ export default function Sistemas() {
           <input
             value={busca}
             onChange={(event) => setBusca(event.target.value)}
-            placeholder="Buscar por nome ou URL..."
+            placeholder="Buscar por nome, URL ou descrição..."
             aria-label="Buscar sistemas"
           />
         </div>
@@ -180,6 +201,26 @@ export default function Sistemas() {
             aria-label="Filtrar por área"
           />
         </div>
+        <label className="select-field">
+          <span>Status</span>
+          <select
+            value={statusFiltro}
+            onChange={(e) => {
+              setStatusFiltro(e.target.value)
+              setSearchParams((prev) => {
+                const next = new URLSearchParams(prev)
+                if (e.target.value === 'todos') next.delete('status')
+                else next.set('status', e.target.value)
+                return next
+              })
+            }}
+          >
+            <option value="todos">Todos os status</option>
+            <option value="1">Ativo</option>
+            <option value="2">Inativo</option>
+            <option value="3">Bloqueado</option>
+          </select>
+        </label>
         <span className="result-count">
           {pluralizar(filtrados.length, 'resultado', 'resultados')}
         </span>
@@ -224,8 +265,26 @@ export default function Sistemas() {
                   </div>
                 </div>
                 <div className="system-card__copy">
-                  <h2>{sistema.nome}</h2>
+                  <div className="flex items-center justify-between gap-2">
+                    <h2>{sistema.nome}</h2>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        sistema.statusId === 1
+                          ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30'
+                          : sistema.statusId === 2
+                            ? 'bg-slate-500/15 text-slate-400 border border-slate-500/30'
+                            : 'bg-rose-500/15 text-rose-500 border border-rose-500/30'
+                      }`}
+                    >
+                      {STATUS_MAP[sistema.statusId ?? 1]?.nome ?? 'Ativo'}
+                    </span>
+                  </div>
                   <AreaBadge area={sistema.area} size="sm" />
+                  {sistema.descricao && (
+                    <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mt-1">
+                      {sistema.descricao}
+                    </p>
+                  )}
                 </div>
                 <a className="system-url" href={sistema.url} target="_blank" rel="noreferrer">
                   <Globe2 size={15} />
@@ -237,8 +296,21 @@ export default function Sistemas() {
                     <UsersRound size={16} />
                     {pluralizar(totalUsuarios, 'usuário com acesso', 'usuários com acesso')}
                   </span>
-                  <span className="system-status">
-                    <i /> Ativo
+                  <span
+                    className={`system-status ${
+                      sistema.statusId === 2
+                        ? 'opacity-60'
+                        : sistema.statusId === 3
+                          ? 'text-rose-500'
+                          : ''
+                    }`}
+                  >
+                    <i
+                      style={{
+                        background: STATUS_MAP[sistema.statusId ?? 1]?.color ?? '#10B981',
+                      }}
+                    />{' '}
+                    {STATUS_MAP[sistema.statusId ?? 1]?.nome ?? 'Ativo'}
                   </span>
                 </div>
               </article>
@@ -303,6 +375,24 @@ export default function Sistemas() {
                 {erros.url && <p className="form-error">{erros.url}</p>}
               </div>
               <div className="form-field">
+                <label htmlFor="sistema-status">Status</label>
+                <select
+                  id="sistema-status"
+                  className="field"
+                  value={form.statusId ?? 1}
+                  onChange={(e) =>
+                    setForm((atual) => ({
+                      ...atual,
+                      statusId: Number(e.target.value) as StatusId,
+                    }))
+                  }
+                >
+                  <option value={1}>Ativo (1)</option>
+                  <option value={2}>Inativo (2)</option>
+                  <option value={3}>Bloqueado (3)</option>
+                </select>
+              </div>
+              <div className="form-field">
                 <label htmlFor="sistema-area">
                   Área responsável <b>*</b>
                 </label>
@@ -346,6 +436,19 @@ export default function Sistemas() {
                   </button>
                 )}
               </div>
+              <div className="form-field">
+                <label htmlFor="sistema-descricao">Descrição</label>
+                <textarea
+                  id="sistema-descricao"
+                  className="field field--textarea"
+                  rows={3}
+                  value={form.descricao || ''}
+                  onChange={(event) =>
+                    setForm((atual) => ({ ...atual, descricao: event.target.value }))
+                  }
+                  placeholder="Finalidade e público-alvo do portal interno"
+                />
+              </div>{' '}
             </div>
             <DialogFooter>
               <Button
