@@ -26,6 +26,7 @@ import { EmptyState } from '../components/EmptyState'
 import { PageHeader } from '../components/PageHeader'
 import { useAccess } from '../context/AccessContext'
 import { useToast } from '../hooks/use-toast'
+import { getAreaIcon } from '../lib/areaIcons'
 import { classePorTexto, iniciais, pluralizar } from '../lib/format'
 import type { Usuario, UsuarioInput } from '../types/access'
 
@@ -227,13 +228,23 @@ export default function Usuarios() {
   const renderPillsSistemas = (usuario: Usuario) => {
     const vinculados = usuario.sistemasIds
       .map((id) => sistemas.find((sistema) => sistema.id === id))
-      .filter(Boolean)
+      .filter((s): s is NonNullable<typeof s> => Boolean(s))
     if (!vinculados.length) return <span className="no-access-pill">Sem atribuição</span>
     return (
       <div className="system-pills">
-        {vinculados.slice(0, 3).map((sistema) => (
-          <span key={sistema!.id}>{sistema!.nome}</span>
-        ))}
+        {vinculados.slice(0, 3).map((sistema) => {
+          const IconeArea = getAreaIcon(sistema.area)
+          return (
+            <span
+              key={sistema.id}
+              title={`${sistema.nome} (${sistema.area})`}
+              className="inline-flex items-center gap-1.5"
+            >
+              <IconeArea size={11} className="opacity-80 flex-shrink-0" />
+              <span className="truncate">{sistema.nome}</span>
+            </span>
+          )
+        })}
         {vinculados.length > 3 && <span className="more-pill">+{vinculados.length - 3}</span>}
       </div>
     )
@@ -547,6 +558,7 @@ export default function Usuarios() {
                 <div className="system-toggle-list">
                   {sistemasDoFormulario.map((sistema) => {
                     const selecionado = form.sistemasIds.includes(sistema.id)
+                    const IconeArea = getAreaIcon(sistema.area)
                     return (
                       <button
                         type="button"
@@ -556,12 +568,18 @@ export default function Usuarios() {
                         role="switch"
                         aria-checked={selecionado}
                       >
-                        <span className="system-toggle__icon">
-                          <ShieldCheck size={17} />
+                        <span className="system-toggle__icon" title={`Área: ${sistema.area}`}>
+                          <IconeArea size={17} />
                         </span>
                         <span>
                           <strong>{sistema.nome}</strong>
-                          <small>{sistema.area}</small>
+                          <span className="inline-flex items-center gap-1 text-[var(--text-tertiary)] text-[9px]">
+                            <IconeArea
+                              size={10}
+                              className="text-[var(--color-primary)] opacity-85"
+                            />
+                            <span>{sistema.area}</span>
+                          </span>
                         </span>
                         <i>{selecionado && <Check size={13} />}</i>
                       </button>

@@ -1051,6 +1051,100 @@ select option {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--orange-soft);
 }
+
+/* Custom Area Select dropdown com ícones (Radix / shadcn style adaptado) */
+.area-select-trigger {
+  min-width: 200px;
+  height: 44px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  outline: none;
+}
+.area-select-trigger:hover {
+  border-color: var(--orange-border);
+  background: var(--surface-hover);
+}
+.area-select-trigger:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--orange-soft);
+}
+.area-select-trigger__value {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.area-select-popover {
+  z-index: 60;
+  min-width: 220px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    var(--glass-shadow),
+    0 16px 36px rgba(0, 0, 0, 0.25);
+  animation: page-in 150ms ease;
+}
+.area-select-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.area-select-option:hover {
+  background: var(--surface-hover);
+}
+.area-select-option.is-selected {
+  background: var(--orange-soft);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+.area-select-option__left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.area-select-option__icon {
+  display: inline-grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 7px;
+  border: 1px solid var(--orange-border);
+  background: var(--orange-soft);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
 .result-count {
   align-self: center;
   padding: 6px 10px;
@@ -1440,12 +1534,12 @@ select option {
   min-height: 38px;
   align-items: center;
   gap: 8px;
-  padding: 0 10px 0 13px;
+  padding: 0 10px 0 10px;
   border: 1px solid var(--hairline);
   border-radius: 999px;
   color: var(--text-secondary);
   background: var(--surface-subtle);
-  font-size: 10px;
+  font-size: 11px;
   cursor: pointer;
   transition: 150ms ease;
 }
@@ -1455,6 +1549,17 @@ select option {
   background: var(--orange-soft);
   transform: translateY(-2px);
 }
+.area-chips__icon {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--orange-border);
+  background: var(--orange-soft);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
 .area-chips b {
   display: grid;
   width: 20px;
@@ -1463,6 +1568,7 @@ select option {
   border-radius: 50%;
   color: var(--color-primary);
   background: var(--orange-soft);
+  font-size: 10px;
 }
 .areas-summary {
   display: flex;
@@ -1581,18 +1687,80 @@ select option {
 .area-pill,
 .department-pill {
   display: inline-flex;
-  max-width: 125px;
-  padding: 4px 8px;
+  align-items: center;
+  gap: 4px;
+  max-width: 140px;
+  padding: 3px 8px;
   overflow: hidden;
   border: 1px solid var(--orange-border);
   border-radius: 999px;
   color: var(--color-primary);
   background: var(--orange-soft);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 700;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+
+/* Componente AreaBadge reutilizável (glass + vibra orange) */
+.area-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px 3px 6px;
+  border: 1px solid var(--orange-border);
+  border-radius: 999px;
+  color: var(--color-primary);
+  background: var(--orange-soft);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  transition: all 150ms ease;
+  line-height: 1.2;
+}
+
+.area-badge--sm {
+  padding: 2px 7px 2px 5px;
+  font-size: 9px;
+}
+
+.area-badge--lg {
+  padding: 5px 12px 5px 8px;
+  font-size: 12px;
+}
+
+.area-badge__icon {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.area-badge__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.area-badge--1 {
+  color: var(--color-blue);
+  border-color: color-mix(in srgb, var(--color-blue) 28%, transparent);
+  background: color-mix(in srgb, var(--color-blue) 10%, transparent);
+}
+
+.area-badge--2 {
+  color: var(--color-turquoise);
+  border-color: color-mix(in srgb, var(--color-turquoise) 28%, transparent);
+  background: color-mix(in srgb, var(--color-turquoise) 10%, transparent);
+}
+
+.area-badge--3 {
+  color: color-mix(in srgb, var(--color-yellow) 76%, var(--text-primary));
+  border-color: color-mix(in srgb, var(--color-yellow) 28%, transparent);
+  background: color-mix(in srgb, var(--color-yellow) 9%, transparent);
 }
 .system-url {
   display: flex;

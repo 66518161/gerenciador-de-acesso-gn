@@ -17,6 +17,7 @@ import {
 import { Button } from '../components/ui/button'
 import { PageHeader } from '../components/PageHeader'
 import { useAccess } from '../context/AccessContext'
+import { getAreaIcon } from '../lib/areaIcons'
 import { formatarData, iniciais, pluralizar } from '../lib/format'
 
 type KpiKey = 'sistemas' | 'usuarios' | 'acessos' | 'semAtribuicao'
@@ -222,31 +223,37 @@ export default function Dashboard() {
             </span>
           </div>
           <div className="access-bars">
-            {estatisticas.acessosPorSistema.map(({ sistema, quantidade }, index) => (
-              <button
-                className="access-bar-row"
-                key={sistema.id}
-                onClick={() => navigate(`/usuarios?system=${encodeURIComponent(sistema.id)}`)}
-                style={{ '--bar-delay': `${index * 60}ms` } as React.CSSProperties}
-                title={`${sistema.nome}: ${pluralizar(quantidade, 'acesso', 'acessos')}`}
-              >
-                <span className="access-bar-label">
-                  <strong>{sistema.nome}</strong>
-                  <small>{sistema.area}</small>
-                </span>
-                <span className="access-bar-track">
-                  <span
-                    className="access-bar-fill"
-                    style={
-                      {
-                        '--bar-size': `${Math.max((quantidade / maiorAcesso) * 100, 4)}%`,
-                      } as React.CSSProperties
-                    }
-                  />
-                </span>
-                <b>{quantidade}</b>
-              </button>
-            ))}
+            {estatisticas.acessosPorSistema.map(({ sistema, quantidade }, index) => {
+              const IconeArea = getAreaIcon(sistema.area)
+              return (
+                <button
+                  className="access-bar-row"
+                  key={sistema.id}
+                  onClick={() => navigate(`/usuarios?system=${encodeURIComponent(sistema.id)}`)}
+                  style={{ '--bar-delay': `${index * 60}ms` } as React.CSSProperties}
+                  title={`${sistema.nome} (${sistema.area}): ${pluralizar(quantidade, 'acesso', 'acessos')}`}
+                >
+                  <span className="access-bar-label">
+                    <strong>{sistema.nome}</strong>
+                    <span className="inline-flex items-center gap-1 text-[var(--text-tertiary)] text-[8px]">
+                      <IconeArea size={10} className="text-[var(--color-primary)]" />
+                      <span>{sistema.area}</span>
+                    </span>
+                  </span>
+                  <span className="access-bar-track">
+                    <span
+                      className="access-bar-fill"
+                      style={
+                        {
+                          '--bar-size': `${Math.max((quantidade / maiorAcesso) * 100, 4)}%`,
+                        } as React.CSSProperties
+                      }
+                    />
+                  </span>
+                  <b>{quantidade}</b>
+                </button>
+              )
+            })}
           </div>
         </article>
 
@@ -335,16 +342,23 @@ export default function Dashboard() {
             Explore os portais organizados pelas áreas responsáveis.
           </p>
           <div className="area-chips">
-            {estatisticas.sistemasPorArea.map(({ area, quantidade }) => (
-              <button
-                key={area}
-                onClick={() => navigate(`/sistemas?area=${encodeURIComponent(area)}`)}
-              >
-                <span>{area}</span>
-                <b>{quantidade}</b>
-                <ArrowRight size={14} />
-              </button>
-            ))}
+            {estatisticas.sistemasPorArea.map(({ area, quantidade }) => {
+              const Icone = getAreaIcon(area)
+              return (
+                <button
+                  key={area}
+                  onClick={() => navigate(`/sistemas?area=${encodeURIComponent(area)}`)}
+                  title={`Ver sistemas de ${area}`}
+                >
+                  <span className="area-chips__icon" aria-hidden="true">
+                    <Icone size={13} />
+                  </span>
+                  <span>{area}</span>
+                  <b>{quantidade}</b>
+                  <ArrowRight size={14} />
+                </button>
+              )
+            })}
           </div>
           <div className="areas-summary">
             <span className="kpi-icon">

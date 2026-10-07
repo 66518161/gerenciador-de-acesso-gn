@@ -26,6 +26,7 @@ import { EmptyState } from '../components/EmptyState'
 import { PageHeader } from '../components/PageHeader'
 import { useAccess } from '../context/AccessContext'
 import { useToast } from '../hooks/use-toast'
+import { getAreaIcon } from '../lib/areaIcons'
 import { formatarData, pluralizar } from '../lib/format'
 import type { Departamento, DepartamentoInput, PerfilAcesso, PerfilInput } from '../types/access'
 
@@ -351,6 +352,7 @@ export default function Configuracoes() {
             <section className="settings-grid">
               {departamentosFiltrados.map((dept, index) => {
                 const vinculados = usuariosVinculadosAoDepartamento(dept.nome)
+                const IconeDept = getAreaIcon(dept.nome)
                 return (
                   <article
                     key={dept.id}
@@ -358,8 +360,8 @@ export default function Configuracoes() {
                   >
                     <div className="settings-card__top">
                       <div className="settings-card__icon-wrap">
-                        <span className="settings-icon">
-                          <Building2 size={22} />
+                        <span className="settings-icon" title={`Área/Departamento: ${dept.nome}`}>
+                          <IconeDept size={22} />
                         </span>
                         <div>
                           <h2>{dept.nome}</h2>

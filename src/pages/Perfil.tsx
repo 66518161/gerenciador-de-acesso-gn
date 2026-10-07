@@ -15,6 +15,7 @@ import { PageHeader } from '../components/PageHeader'
 import { EmptyState } from '../components/EmptyState'
 import { useAccess } from '../context/AccessContext'
 import { useToast } from '../hooks/use-toast'
+import { AreaBadge, getAreaIcon } from '../lib/areaIcons'
 import { formatarData, iniciais } from '../lib/format'
 
 export default function Perfil() {
@@ -200,25 +201,28 @@ export default function Perfil() {
         </div>
         {meusSistemas.length ? (
           <div className="my-systems-grid">
-            {meusSistemas.map((sistema) => (
-              <a
-                className="my-system-card glass-surface"
-                key={sistema.id}
-                href={sistema.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="system-icon">
-                  <ShieldCheck size={21} />
-                </span>
-                <span>
-                  <strong>{sistema.nome}</strong>
-                  <small>{sistema.area}</small>
-                  <em>{sistema.url.replace(/^https?:\/\//, '')}</em>
-                </span>
-                <ExternalLink size={17} />
-              </a>
-            ))}
+            {meusSistemas.map((sistema) => {
+              const IconeArea = getAreaIcon(sistema.area)
+              return (
+                <a
+                  className="my-system-card glass-surface"
+                  key={sistema.id}
+                  href={sistema.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span className="system-icon" title={`Área: ${sistema.area}`}>
+                    <IconeArea size={21} />
+                  </span>
+                  <span>
+                    <strong>{sistema.nome}</strong>
+                    <AreaBadge area={sistema.area} size="sm" />
+                    <em>{sistema.url.replace(/^https?:\/\//, '')}</em>
+                  </span>
+                  <ExternalLink size={17} />
+                </a>
+              )
+            })}
           </div>
         ) : (
           <div className="glass-surface empty-card">

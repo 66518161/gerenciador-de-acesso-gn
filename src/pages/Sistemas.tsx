@@ -25,6 +25,7 @@ import { EmptyState } from '../components/EmptyState'
 import { PageHeader } from '../components/PageHeader'
 import { useAccess } from '../context/AccessContext'
 import { useToast } from '../hooks/use-toast'
+import { AreaBadge, AreaSelectDropdown, getAreaIcon } from '../lib/areaIcons'
 import { classePorTexto, pluralizar } from '../lib/format'
 import type { Sistema, SistemaInput } from '../types/access'
 
@@ -160,17 +161,25 @@ export default function Sistemas() {
             aria-label="Buscar sistemas"
           />
         </div>
-        <label className="select-field">
+        <div className="select-field">
           <span>Área</span>
-          <select value={area} onChange={(event) => setArea(event.target.value)}>
-            <option value="todas">Todas as áreas</option>
-            {areas.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </label>
+          <AreaSelectDropdown
+            value={area}
+            onChange={(proxima) => {
+              setArea(proxima)
+              setSearchParams((prev) => {
+                const next = new URLSearchParams(prev)
+                if (proxima === 'todas') next.delete('area')
+                else next.set('area', proxima)
+                return next
+              })
+            }}
+            areas={areas}
+            allowAll
+            allLabel="Todas as áreas"
+            aria-label="Filtrar por área"
+          />
+        </div>
         <span className="result-count">
           {pluralizar(filtrados.length, 'resultado', 'resultados')}
         </span>
@@ -183,14 +192,18 @@ export default function Sistemas() {
               usuario.sistemasIds.includes(sistema.id),
             ).length
             const cor = classePorTexto(sistema.area)
+            const IconeArea = getAreaIcon(sistema.area)
             return (
               <article
                 className={`system-card glass-surface stagger-${(index % 5) + 1}`}
                 key={sistema.id}
               >
                 <div className="system-card__top">
-                  <span className={`system-icon system-icon--${cor}`}>
-                    <ServerCog size={22} />
+                  <span
+                    className={`system-icon system-icon--${cor}`}
+                    title={`Área: ${sistema.area}`}
+                  >
+                    <IconeArea size={22} />
                   </span>
                   <div className="card-actions">
                     <button
@@ -212,7 +225,7 @@ export default function Sistemas() {
                 </div>
                 <div className="system-card__copy">
                   <h2>{sistema.nome}</h2>
-                  <span className={`area-pill area-pill--${cor}`}>{sistema.area}</span>
+                  <AreaBadge area={sistema.area} size="sm" />
                 </div>
                 <a className="system-url" href={sistema.url} target="_blank" rel="noreferrer">
                   <Globe2 size={15} />
@@ -301,28 +314,23 @@ export default function Sistemas() {
                     onChange={(event) =>
                       setForm((atual) => ({ ...atual, area: event.target.value }))
                     }
-                    placeholder="Digite uma nova área"
+                    placeholder="Digite uma nova área (ex.: Operações, TI, Marketing)"
+                    autoFocus
                   />
                 ) : (
-                  <select
+                  <AreaSelectDropdown
                     id="sistema-area"
-                    className="field"
                     value={form.area}
-                    onChange={(event) => {
-                      if (event.target.value === '__nova') {
-                        setNovaArea(true)
-                        setForm((atual) => ({ ...atual, area: '' }))
-                      } else setForm((atual) => ({ ...atual, area: event.target.value }))
+                    onChange={(val) => setForm((atual) => ({ ...atual, area: val }))}
+                    areas={areas}
+                    placeholder="Selecione uma área responsável"
+                    allowCustom
+                    onSelectCustom={() => {
+                      setNovaArea(true)
+                      setForm((atual) => ({ ...atual, area: '' }))
                     }}
-                  >
-                    <option value="">Selecione uma área</option>
-                    {areas.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                    <option value="__nova">+ Criar nova área</option>
-                  </select>
+                    aria-label="Área responsável"
+                  />
                 )}
                 {erros.area && <p className="form-error">{erros.area}</p>}
                 {novaArea && (
