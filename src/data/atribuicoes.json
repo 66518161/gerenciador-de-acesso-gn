@@ -1,0 +1,62 @@
+[
+  {
+    "usuarioId": "usuario-ana-souza",
+    "sistemaId": "sistema-bi",
+    "data": "2025-06-18T14:32:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-bruno-lima",
+    "sistemaId": "sistema-financeiro",
+    "data": "2025-06-18T11:08:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-camila-rocha",
+    "sistemaId": "sistema-beneficios",
+    "data": "2025-06-17T16:45:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-felipe-costa",
+    "sistemaId": "sistema-compras",
+    "data": "2025-06-17T09:21:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-gabriela-nunes",
+    "sistemaId": "sistema-ferias",
+    "data": "2025-06-16T15:14:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-diego-martins",
+    "sistemaId": "sistema-bi",
+    "data": "2025-06-16T10:40:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-eduarda-alves",
+    "sistemaId": "sistema-helpdesk",
+    "data": "2025-06-13T13:55:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-henrique-melo",
+    "sistemaId": "sistema-financeiro",
+    "data": "2025-06-12T17:02:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-isabela-ramos",
+    "sistemaId": "sistema-intranet",
+    "data": "2025-06-11T08:28:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-camila-rocha",
+    "sistemaId": "sistema-rh",
+    "data": "2025-06-10T14:12:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-bruno-lima",
+    "sistemaId": "sistema-compras",
+    "data": "2025-06-09T10:33:00.000Z"
+  },
+  {
+    "usuarioId": "usuario-ana-souza",
+    "sistemaId": "sistema-helpdesk",
+    "data": "2025-06-06T16:18:00.000Z"
+  }
+]

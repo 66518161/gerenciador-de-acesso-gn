@@ -1,0 +1,8 @@
+{
+  "indicadores": {
+    "sistemas": { "delta": 12, "serie": [3, 4, 4, 5, 6, 6, 7, 8] },
+    "usuarios": { "delta": 18, "serie": [4, 5, 6, 6, 8, 9, 10, 11] },
+    "acessos": { "delta": 9, "serie": [12, 15, 17, 18, 21, 24, 27, 30] },
+    "semAtribuicao": { "delta": -25, "serie": [5, 5, 4, 4, 3, 3, 2, 2] }
+  }
+}

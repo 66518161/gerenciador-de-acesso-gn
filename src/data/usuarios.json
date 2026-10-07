@@ -1,0 +1,112 @@
+[
+  {
+    "id": "usuario-ana-souza",
+    "nome": "Ana Souza",
+    "email": "ana.souza@empresa.com",
+    "departamento": "TI",
+    "senha": "vibra123",
+    "idMicrosoft": "ana.souza@empresa.com",
+    "sistemasIds": ["sistema-helpdesk", "sistema-intranet", "sistema-bi"],
+    "criadoEm": "2024-01-10T08:30:00.000Z"
+  },
+  {
+    "id": "usuario-bruno-lima",
+    "nome": "Bruno Lima",
+    "email": "bruno.lima@empresa.com",
+    "departamento": "Financeiro",
+    "senha": "demo2024",
+    "idMicrosoft": "c1f5b55e-4f51-4e7b-939d-0d58f316d615",
+    "sistemasIds": ["sistema-financeiro", "sistema-compras", "sistema-intranet"],
+    "criadoEm": "2024-01-23T10:20:00.000Z"
+  },
+  {
+    "id": "usuario-camila-rocha",
+    "nome": "Camila Rocha",
+    "email": "camila.rocha@empresa.com",
+    "departamento": "RH",
+    "senha": "demo2024",
+    "idMicrosoft": "camila.rocha@empresa.com",
+    "sistemasIds": ["sistema-rh", "sistema-ferias", "sistema-beneficios", "sistema-intranet"],
+    "criadoEm": "2024-02-05T14:00:00.000Z"
+  },
+  {
+    "id": "usuario-diego-martins",
+    "nome": "Diego Martins",
+    "email": "diego.martins@empresa.com",
+    "departamento": "Comercial",
+    "senha": "demo2024",
+    "idMicrosoft": "7a90cc7b-a5d8-4f24-80fd-c96aaacf588c",
+    "sistemasIds": ["sistema-intranet", "sistema-bi"],
+    "criadoEm": "2024-02-16T09:10:00.000Z"
+  },
+  {
+    "id": "usuario-eduarda-alves",
+    "nome": "Eduarda Alves",
+    "email": "eduarda.alves@empresa.com",
+    "departamento": "Operações",
+    "senha": "demo2024",
+    "idMicrosoft": "eduarda.alves@empresa.com",
+    "sistemasIds": ["sistema-compras", "sistema-helpdesk", "sistema-intranet"],
+    "criadoEm": "2024-03-01T15:45:00.000Z"
+  },
+  {
+    "id": "usuario-felipe-costa",
+    "nome": "Felipe Costa",
+    "email": "felipe.costa@empresa.com",
+    "departamento": "TI",
+    "senha": "demo2024",
+    "idMicrosoft": "0fe1d4dd-104f-4c49-b699-ae32c93d2671",
+    "sistemasIds": ["sistema-helpdesk", "sistema-bi", "sistema-intranet", "sistema-compras"],
+    "criadoEm": "2024-03-13T11:25:00.000Z"
+  },
+  {
+    "id": "usuario-gabriela-nunes",
+    "nome": "Gabriela Nunes",
+    "email": "gabriela.nunes@empresa.com",
+    "departamento": "RH",
+    "senha": "demo2024",
+    "idMicrosoft": "gabriela.nunes@empresa.com",
+    "sistemasIds": ["sistema-rh", "sistema-ferias", "sistema-beneficios"],
+    "criadoEm": "2024-03-28T08:55:00.000Z"
+  },
+  {
+    "id": "usuario-henrique-melo",
+    "nome": "Henrique Melo",
+    "email": "henrique.melo@empresa.com",
+    "departamento": "Financeiro",
+    "senha": "demo2024",
+    "idMicrosoft": "f49ac628-7548-4b18-bd38-e71440b97db6",
+    "sistemasIds": ["sistema-financeiro", "sistema-bi"],
+    "criadoEm": "2024-04-09T13:40:00.000Z"
+  },
+  {
+    "id": "usuario-isabela-ramos",
+    "nome": "Isabela Ramos",
+    "email": "isabela.ramos@empresa.com",
+    "departamento": "Comercial",
+    "senha": "demo2024",
+    "idMicrosoft": "isabela.ramos@empresa.com",
+    "sistemasIds": ["sistema-intranet"],
+    "criadoEm": "2024-04-22T10:05:00.000Z"
+  },
+  {
+    "id": "usuario-joao-pires",
+    "nome": "João Pires",
+    "email": "joao.pires@empresa.com",
+    "departamento": "Operações",
+    "senha": "demo2024",
+    "idMicrosoft": "d2268b42-8fc7-461f-a1fa-0a5ea36e4314",
+    "sistemasIds": [],
+    "criadoEm": "2024-05-03T16:15:00.000Z"
+  },
+  {
+    "id": "usuario-larissa-freitas",
+    "nome": "Larissa Freitas",
+    "email": "larissa.freitas@empresa.com",
+    "departamento": "Operações",
+    "senha": "demo2024",
+    "idMicrosoft": "larissa.freitas@empresa.com",
+    "sistemasIds": [],
+    "criadoEm": "2024-05-14T09:50:00.000Z"
+  }
+]

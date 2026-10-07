@@ -1,0 +1,193 @@
+SKILL
+---
+name: vibra-design-system
+description: "Use this skill whenever building, styling, or reviewing UI/UX for Vibra — websites, dashboards, internal tools, landing pages, apps, design mockups, HTML/CSS/React components, or any digital interface that must follow Vibra's brand identity. Trigger this any time the user mentions Vibra, asks to 'seguir o brandbook', wants brand colors/fonts applied, asks for light and dark mode, or asks for a glass/glassmorphism visual effect in a Vibra-branded context. Covers color palette (central + complementary), typography (Baloo Thambi 2, FabfeltScript, Calibri), logo usage rules, spacing/clear-space logic, and the 'light glass' surface system with light and dark variants that must be produced for every UI element by default."
+license: Proprietary. Derived from Vibra Brandbook 2021 (material confidencial e proprietário) — internal use only.
+---
+# Vibra Design System
+Translates the Vibra Brandbook (2021), section "Sistema de identidade / Identidade visual"
+(pages 94–109), into a practical design system for **digital product / software
+development** — not just print. Source material is confidential/proprietary; treat
+outputs the same way (internal tools, not public redistribution of brand assets).
+## Core rule: always produce light AND dark, with the glass system
+Every UI surface, component, or screen built with this skill must ship in **two
+variants — light and dark** — and use the **light glass** treatment described below
+for elevated/floating surfaces (cards, modals, nav bars, panels). This is a standing
+requirement from the user, not optional per-request. If the user asks for "a card" or
+"a screen," deliver both themes unless they explicitly say otherwise.
+Use `assets/tokens.css` as the base — it already defines both themes and the glass
+utility classes. Load it, don't hand-roll variables from scratch.
+## 1. Color system
+Vibra's brand color is defined precisely (Pantone/RGB/HEX/CMYK) in the brandbook.
+For digital work, always use the HEX values below — they are the authoritative
+source, don't approximate or eyeball colors from screenshots.
+### Central palette (marca Vibra — use for anything about the Vibra brand broadly)
+| Nome | Papel | HEX | RGB | Pantone |
+|---|---|---|---|---|
+| Laranja (Orange) | Primária / ação | `#F15623` | 241 86 35 | 166 C |
+| Branco (White) | Base / fundo | `#FFFFFF` | 255 255 255 | — |
+| Cinza (Gray) | Neutra / apoio | `#8C8985` | 140 137 133 | 2332 C |
+### Complementary palette (para identificar/sinalizar empreendimentos e usos secundários — accents, categorização, status)
+| Nome | HEX | RGB | Pantone |
+|---|---|---|---|
+| Azul (Blue) | `#0057B7` | 0 87 183 | 2935 C |
+| Amarelo (Yellow) | `#FBDE40` | 251 222 64 | 114 C |
+| Turquesa (Turquoise) | `#7EDDD3` | 126 221 211 | 7471 C |
+### Brandbook color-mix ratio logic (apply to UI composition, not just marketing pieces)
+The brandbook defines three "modes" of color use — carry this logic into product UI:
+- **Marca Vibra (brand-level screens, e.g. institutional pages, app shell)** → central
+  palette only: white, gray, orange. No secondary colors.
+- **Produto regular (default product UI — most screens, dashboards, flows)** → orange
+  is the dominant/predominant color; white and gray support it; **one** secondary
+  color (blue, yellow or turquoise) is used sparingly for a specific product line,
+  category, or status — never mix more than one secondary color in the same view.
+- **Produto premium (high-value flows — e.g. checkout, high-tier plans, VIP areas)**
+  → white becomes dominant, orange and gray recede into secondary/accent roles. More
+  whitespace, less saturated color, calmer feel.
+Practical translation: orange = primary actions/CTAs/brand marks. Gray = text,
+borders, disabled states. White = base surface. Secondary colors = status/tags/charts,
+one per context, never decorative noise.
+### Don't invent tints
+If you need a lighter/darker step (hover states, disabled, subtle backgrounds), derive
+it mathematically from these HEX values (mix with white/black in code, e.g.
+`color-mix()` in CSS) rather than picking a new arbitrary color. See
+`assets/tokens.css` for pre-built scales.
+## 2. Typography
+| Fonte | Uso | Pesos disponíveis | Fonte de obtenção |
+|---|---|---|---|
+| **Baloo Thambi 2** | Títulos e textos — a fonte de trabalho para toda UI (headings, body, labels, buttons) | Regular, Medium, Semibold, Bold, Extrabold | Google Fonts (open source): `fonts.google.com/specimen/Baloo+Thambi+2` |
+| **FabfeltScript Bold** | Acentos pontuais, "assinatura" da marca, momentos de calor humano (ex: mensagem de boas-vindas, empty states alegres). **Nunca** usar para textos longos, labels funcionais ou UI densa — é decorativa e de baixa legibilidade em telas pequenas | Bold | Fonte manuscrita de terceiros: `fabiendespinoy.free.fr/typo-fabfelt.html` — licença própria do autor, verifique antes de embutir em produto; para impressão o brandbook exige converter em curvas |
+| **Calibri** | Apenas para documentos Office (e-mail, Word, PowerPoint, relatórios) — **não** usar em produto digital/web | Regular, Bold | Fonte do sistema (Microsoft) |
+For any web/software UI: `font-family: 'Baloo Thambi 2', sans-serif;` is the default
+for everything. Reach for FabfeltScript only as an intentional accent (e.g. one line
+of a hero section), never as the primary UI font — it doesn't hold up at small sizes
+or in dense interfaces. Never use Calibri in product UI; it's an Office-suite-only
+convention from the brandbook.
+Load Baloo Thambi 2 via Google Fonts:
+```html
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+```
+## 3. Logo usage (when placing the Vibra logo in an interface)
+- **Clear space**: keep a protection zone around the logo at least equal to the
+  height of the dot on the "i" in the wordmark. No other element, text, or logo may
+  enter this space.
+- **Minimum size**: 82px width (logo only) / 125px width (logo + tagline) for digital.
+  Never render smaller.
+- **Never**: stretch, squash, rotate, apply a drop shadow, or alter the logo's
+  typography/curves.
+- **Color version on backgrounds**:
+  - Background ≤40% orange pigmentation → positive (color) logo.
+  - Background >50% orange pigmentation → negative (white) logo.
+  - On solid orange or gray backgrounds → negative (white) logo.
+  - On solid white background → positive (color) logo.
+  - **Never** place the logo on blue, yellow, or turquoise backgrounds (positive or
+    negative) — insufficient contrast/off-brand.
+- Prefer the original electronic logo files over recreating the mark in CSS/SVG from
+  scratch; if no asset is provided, say so rather than approximating the wordmark.
+## 4. The "light glass" surface system
+This is a glassmorphism treatment built specifically for Vibra using the brand
+palette as the tint source (not in the original brandbook — this is the systematic
+extension the user asked for). Apply it to elevated surfaces: cards, modals, dropdown
+panels, top nav, sidebars, toasts.
+**Recipe (both themes share the same mechanics, only the tint/opacity/border shift):**
+```css
+.glass-surface {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-lg);
+}
+```
+- **Light theme glass**: near-white translucent surface (`rgba(255,255,255,0.55–0.7)`)
+  over a soft light-gray/orange-tinted backdrop, blur 16–20px, hairline white border,
+  soft diffuse shadow. Reads as frosted glass over daylight.
+- **Dark theme glass**: dark-gray translucent surface (`rgba(20,20,22,0.55–0.65)`)
+  with a faint warm orange glow in the shadow (brand accent bleeding through), blur
+  16–20px, hairline `rgba(255,255,255,0.08)` border. Reads as smoked glass with the
+  brand's warmth underneath.
+- Orange is the accent that "glows" through glass (used in shadow tint, focus rings,
+  active-state borders) — it should never be the glass fill itself, since large flat
+  areas of saturated `#F15623` behind blur read as muddy, not glassy.
+- Always pair glass surfaces with a busier backdrop (gradient, image, or layered
+  shapes) behind them — glass over a flat single color loses the effect entirely.
+Full token implementation, ready to import: `assets/tokens.css`. A live example of a
+light/dark glass card is in `assets/example.html` — open it in a browser to see both
+themes side by side before building new components.
+## 5. Building a new component — checklist
+1. Import `assets/tokens.css` (or port the CSS variables into your framework's theme
+   config — Tailwind, styled-components, etc.).
+2. Use `var(--color-*)` tokens, never hardcode hex values in component code.
+3. Set typography to Baloo Thambi 2 by default.
+4. Decide the color mode (marca / produto regular / produto premium) per section 1 and
+   pick your secondary accent accordingly — max one secondary color per view.
+5. For any elevated/floating surface, apply the `.glass-surface` treatment.
+6. Build the dark variant alongside the light one — don't treat dark mode as a
+   follow-up pass; the token file already gives you both, so wire up a theme
+   toggle (`data-theme="light|dark"` on a root element is the pattern
+   `tokens.css` expects).
+7. If placing the logo, apply the clear-space and minimum-size rules from section 3.
+
+=====================================================================================================
+
+# Fonte: Vibra Brandbook 2021 — "Sistema de identidade / Identidade visual" (páginas 94–109)
+Material confidencial e proprietário. Transcrição para referência interna de
+desenvolvimento — não redistribuir os arquivos originais de logo/artes.
+## Paleta de cores
+### Paleta central
+- **Laranja** — Pantone 166 C · RGB 241 86 35 · HEX #F15623 · CMYK 0 82 100 0
+- **Branco** — RGB 255 255 255 · HEX #FFFFFF · CMYK 0 0 0 0
+- **Cinza** — Pantone 2332 C · RGB 140 137 133 · HEX #8C8985 · CMYK 47 40 43 5
+### Paleta complementar
+- **Azul** — Pantone 2935 C · RGB 0 87 183 · HEX #0057B7 · CMYK 100 63 0 2
+- **Amarelo** — Pantone 114 C · RGB 251 222 64 · HEX #FBDE40 · CMYK 0 2 80 0
+- **Turquesa** — Pantone 7471 C · RGB 126 221 211 · HEX #7EDDD3 · CMYK 41 0 18 0
+### Lógica de uso (exemplo de uso, p.108)
+- **Marca Vibra**: peças sobre a marca de forma ampla usam a paleta central —
+  branco, laranja e cinza — sem cores complementares.
+- **Produto regular**: laranja é a cor predominante; branco e cinza em menor
+  proporção; + a cor da paleta secundária reservada ao empreendimento (ex.: Vibra
+  Cupecê recebe azul).
+- **Produto premium**: branco passa a ser a cor predominante (peças mais
+  sofisticadas, menos cor, público específico); laranja e cinza em menor proporção.
+## Tipografia
+- **Baloo Thambi 2** — fonte sem serifa, open source (Google Fonts). Usada para
+  títulos e textos. Pesos: Regular, Medium, Semibold, Bold, Extrabold.
+  Link: https://fonts.google.com/specimen/Baloo+Thambi+2
+- **FabfeltScript Bold** — fonte manuscrita casual, para criar atmosfera pessoal,
+  próxima e alegre. Link: http://fabiendespinoy.free.fr/typo-fabfelt.html
+  Atenção do brandbook: antes de dar saída em qualquer peça impressa que usa
+  FabfeltScript, transformar em curvas.
+- **Calibri** — recomendada para e-mails, documentos e apresentações do pacote
+  Office (Regular, Bold).
+## Logotipo
+- Versão preferencial: cor positiva, laranja (Pantone 166 C).
+- Versão negativa disponível para melhor contraste conforme o layout.
+- Versões P&B (positiva e negativa): uso restrito, apenas com limitação técnica de
+  impressão monocromática (ex.: notas fiscais, caixa de embarque).
+- Símbolo: síntese máxima da identidade; usar como redução máxima do logo ou em
+  perfis de redes sociais.
+- Logo com tagline: usar em todo material de comunicação (posts, key visuals,
+  campanhas, catálogos, anúncios, feiras, convenções, ativações).
+### Área de proteção (p.101)
+Espaço de respiro em torno do logo — nenhum outro elemento pode invadir. Definido
+pela altura do "pingo" da letra "i" do logotipo (mesma métrica para logo isolado e
+logo com tagline).
+### Tamanho mínimo (p.102)
+- Logo: digital 82px de largura · impressão 25mm de largura.
+- Logo com tagline: digital 125px de largura · impressão 38mm de largura.
+### Comportamento sobre fundos (p.103–104)
+- Fundo com até 40% de pigmentação laranja → logo positivo (cor).
+- Fundo com pigmentação maior que 50% → logo negativo (branco).
+- Sobre fundos laranja e cinza → versão negativa.
+- Sobre fundo branco → versão positiva.
+- Nunca aplicar o logo (positivo ou negativo) sobre fundos azul, amarelo ou
+  turquesa — não há contraste/legibilidade suficiente.
+### Fundos fotográficos (p.105)
+Escolher a área mais "livre" da foto para posicionar o logo; escolher versão
+positiva ou negativa pelo melhor contraste com a imagem.
+### Usos incorretos (p.106)
+Não apertar, esticar ou rotacionar o logo. Não alterar a tipografia do logo. Não
+aplicar sombra.
+
