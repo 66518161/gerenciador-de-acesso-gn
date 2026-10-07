@@ -1,0 +1,32 @@
+[
+  {
+    "id": "dept-ti",
+    "nome": "TI",
+    "descricao": "Tecnologia da Informação e Infraestrutura",
+    "criadoEm": "2024-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "dept-financeiro",
+    "nome": "Financeiro",
+    "descricao": "Controladoria, Tesouraria e Contabilidade",
+    "criadoEm": "2024-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "dept-rh",
+    "nome": "RH",
+    "descricao": "Recursos Humanos, DP e Gestão de Pessoas",
+    "criadoEm": "2024-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "dept-comercial",
+    "nome": "Comercial",
+    "descricao": "Vendas, Negociação e Parcerias",
+    "criadoEm": "2024-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "dept-operacoes",
+    "nome": "Operações",
+    "descricao": "Logística, Distribuição e Campo",
+    "criadoEm": "2024-01-05T09:00:00.000Z"
+  }
+]

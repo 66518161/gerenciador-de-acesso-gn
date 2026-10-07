@@ -1,0 +1,23 @@
+[
+  {
+    "id": "perfil-administrador",
+    "nome": "Administrador",
+    "descricao": "Acesso irrestrito a configurações, criação de usuários, catálogos e relatórios gerais.",
+    "nivel": "Total",
+    "criadoEm": "2024-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "perfil-gestor",
+    "nome": "Gestor",
+    "descricao": "Gestão e visualização de colaboradores, relatórios de equipe e atribuições do setor.",
+    "nivel": "Gerencial",
+    "criadoEm": "2024-01-05T09:00:00.000Z"
+  },
+  {
+    "id": "perfil-colaborador",
+    "nome": "Colaborador",
+    "descricao": "Acesso padrão aos sistemas e portais concedidos conforme as funções do cargo.",
+    "nivel": "Operacional",
+    "criadoEm": "2024-01-05T09:00:00.000Z"
+  }
+]

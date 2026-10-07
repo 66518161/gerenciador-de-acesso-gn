@@ -42,8 +42,16 @@ export default function Usuarios() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { toast } = useToast()
-  const { sistemas, usuarios, usuarioLogado, criarUsuario, atualizarUsuario, excluirUsuario } =
-    useAccess()
+  const {
+    sistemas,
+    usuarios,
+    usuarioLogado,
+    departamentos: listaDepartamentos,
+    perfis,
+    criarUsuario,
+    atualizarUsuario,
+    excluirUsuario,
+  } = useAccess()
   const [busca, setBusca] = useState(() => searchParams.get('q') ?? '')
   const [departamento, setDepartamento] = useState(() => searchParams.get('dept') ?? 'todos')
   const [sistemaFiltro, setSistemaFiltro] = useState(() => searchParams.get('system') ?? 'todos')
@@ -55,11 +63,12 @@ export default function Usuarios() {
   const [buscaSistemas, setBuscaSistemas] = useState('')
   const [excluindo, setExcluindo] = useState<Usuario | null>(null)
 
-  const departamentos = useMemo(
-    () =>
-      [...new Set(usuarios.map((item) => item.departamento))].sort((a, b) => a.localeCompare(b)),
-    [usuarios],
-  )
+  const departamentos = useMemo(() => {
+    const nomes = new Set<string>()
+    listaDepartamentos.forEach((d) => nomes.add(d.nome))
+    usuarios.forEach((u) => nomes.add(u.departamento))
+    return [...nomes].sort((a, b) => a.localeCompare(b))
+  }, [listaDepartamentos, usuarios])
 
   useEffect(() => {
     const parametroBusca = searchParams.get('q')
@@ -122,6 +131,7 @@ export default function Usuarios() {
       nome: usuario.nome,
       email: usuario.email,
       departamento: usuario.departamento,
+      perfilId: usuario.perfilId ?? '',
       senha: '',
       idMicrosoft: usuario.idMicrosoft,
       sistemasIds: [...usuario.sistemasIds],
@@ -162,6 +172,7 @@ export default function Usuarios() {
       nome: form.nome.trim(),
       email: form.email.trim().toLowerCase(),
       departamento: form.departamento.trim(),
+      perfilId: form.perfilId || undefined,
       senha: form.senha,
       idMicrosoft: form.idMicrosoft.trim(),
       sistemasIds: [...form.sistemasIds],
@@ -305,8 +316,13 @@ export default function Usuarios() {
                         <span>
                           <strong>{usuario.nome}</strong>
                           <small>{usuario.email}</small>
+                          {usuario.perfilId && (
+                            <span className="user-role-badge">
+                              {perfis.find((p) => p.id === usuario.perfilId)?.nome ?? 'Perfil'}
+                            </span>
+                          )}
                         </span>
-                      </div>
+                      </div>{' '}
                     </td>
                     <td data-label="Departamento">
                       <span className="department-pill">{usuario.departamento}</span>
@@ -470,7 +486,28 @@ export default function Usuarios() {
                 />
                 {erros.senha && <p className="form-error">{erros.senha}</p>}
               </div>
-              <div className="form-field form-field--full">
+              <div className="form-field">
+                <label htmlFor="usuario-perfil">Perfil de acesso</label>
+                <div className="select-wrap">
+                  <select
+                    id="usuario-perfil"
+                    className="field"
+                    value={form.perfilId ?? ''}
+                    onChange={(event) =>
+                      setForm((atual) => ({ ...atual, perfilId: event.target.value }))
+                    }
+                  >
+                    <option value="">Selecione um perfil</option>
+                    {perfis.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.nome} ({item.nivel ?? 'Operacional'})
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={15} />
+                </div>
+              </div>
+              <div className="form-field">
                 <label htmlFor="usuario-microsoft">
                   ID Microsoft <b>*</b>
                 </label>

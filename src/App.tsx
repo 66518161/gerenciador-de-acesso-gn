@@ -7,6 +7,7 @@ import Dashboard from './pages/Index'
 import Login from './pages/Login'
 import Sistemas from './pages/Sistemas'
 import Usuarios from './pages/Usuarios'
+import Configuracoes from './pages/Configuracoes'
 import Perfil from './pages/Perfil'
 import NotFound from './pages/NotFound'
 
@@ -31,6 +32,7 @@ export default function App() {
               <Route index element={<Dashboard />} />
               <Route path="/sistemas" element={<Sistemas />} />
               <Route path="/usuarios" element={<Usuarios />} />
+              <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="/perfil" element={<Perfil />} />
             </Route>
             <Route path="*" element={<NotFound />} />

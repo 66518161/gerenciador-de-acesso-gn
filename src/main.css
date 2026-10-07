@@ -2143,6 +2143,190 @@ select option {
   background: var(--color-primary);
 }
 
+/* User Role Badge */
+.user-role-badge {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 1px 7px;
+  width: fit-content;
+  border: 1px solid var(--orange-border);
+  border-radius: 6px;
+  color: var(--color-primary);
+  background: var(--orange-soft);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Configurações (Departamentos e Perfis) */
+.settings-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.settings-tabs__list {
+  display: inline-flex;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 14px;
+  width: fit-content;
+  max-width: 100%;
+}
+.settings-tabs__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 150ms ease;
+}
+.settings-tabs__trigger:hover {
+  color: var(--text-primary);
+}
+.settings-tabs__trigger[data-state='active'] {
+  color: var(--color-white);
+  background: var(--color-primary);
+  box-shadow: 0 4px 14px var(--orange-border);
+}
+.settings-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+.settings-tabs__trigger:not([data-state='active']) .settings-badge {
+  background: var(--orange-soft);
+  color: var(--color-primary);
+}
+.settings-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+.settings-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  border-radius: 18px;
+  gap: 14px;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+.settings-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.4);
+}
+.settings-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.settings-card__icon-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.settings-card__icon-wrap h2 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.settings-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.settings-card__date {
+  color: var(--text-tertiary);
+  font-size: 9px;
+}
+.settings-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--color-primary);
+  background: var(--orange-soft);
+  border: 1px solid var(--orange-border);
+}
+.settings-icon--orange {
+  color: var(--color-white);
+  background: linear-gradient(135deg, var(--color-primary), #d94212);
+  border-color: var(--orange-border);
+}
+.perfil-level-pill {
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  background: var(--orange-soft);
+  border: 1px solid var(--orange-border);
+}
+.settings-card__desc {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+  flex: 1;
+}
+.settings-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+  font-size: 11px;
+}
+.settings-card__users {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+.status-pill {
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.status-pill--active {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.status-pill--idle {
+  color: var(--text-tertiary);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+}
+.field--textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
 /* Perfil */
 .profile-grid {
   display: grid;

@@ -12,6 +12,7 @@ import {
   RefreshCw,
   Search,
   ServerCog,
+  Settings,
   Sun,
   UserRound,
   UsersRound,
@@ -37,13 +38,14 @@ const navegacao = [
   { label: 'Visão Geral', to: '/', icon: LayoutDashboard },
   { label: 'Sistemas', to: '/sistemas', icon: ServerCog },
   { label: 'Usuários', to: '/usuarios', icon: UsersRound },
-  { label: 'Meu Perfil', to: '/perfil', icon: CircleUserRound },
+  { label: 'Configurações', to: '/configuracoes', icon: Settings },
 ]
 
 const titulos: Record<string, string> = {
   '/': 'Visão Geral',
   '/sistemas': 'Sistemas',
   '/usuarios': 'Usuários',
+  '/configuracoes': 'Configurações',
   '/perfil': 'Meu Perfil',
 }
 
@@ -220,8 +222,8 @@ export default function Layout() {
             >
               <DropdownMenuLabel>Minha conta</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => navigate('/perfil')}>
-                <CircleUserRound size={16} /> Meu Perfil
+              <DropdownMenuItem onSelect={() => navigate('/configuracoes')}>
+                <Settings size={16} /> Configurações
               </DropdownMenuItem>
               <DropdownMenuItem className="menu-danger" onSelect={encerrarSessao}>
                 <LogOut size={16} /> Sair
