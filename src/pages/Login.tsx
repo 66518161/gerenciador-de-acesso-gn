@@ -57,10 +57,10 @@ export default function Login() {
     }
   }
 
-  const loginGoogle = () => {
+  const loginMicrosoft = () => {
     toast({
       title: 'Login social indisponível.',
-      description: 'O acesso com Google não está disponível nesta versão de demonstração.',
+      description: 'O acesso com Microsoft não está disponível nesta versão de demonstração.',
       duration: 3500,
     })
   }
@@ -148,8 +148,26 @@ export default function Login() {
           <div className="login-divider">
             <span>OU</span>
           </div>
-          <Button type="button" variant="outline" className="google-button" onClick={loginGoogle}>
-            <span className="google-g">G</span> Continuar com Google
+          <Button
+            type="button"
+            variant="outline"
+            className="microsoft-button"
+            onClick={loginMicrosoft}
+          >
+            <svg
+              className="microsoft-logo"
+              viewBox="0 0 21 21"
+              width="18"
+              height="18"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <rect x="1" y="1" width="9" height="9" fill="#F25022" />
+              <rect x="11" y="1" width="9" height="9" fill="#7FBA00" />
+              <rect x="1" y="11" width="9" height="9" fill="#00A4EF" />
+              <rect x="11" y="11" width="9" height="9" fill="#FFB900" />
+            </svg>
+            Continuar com Microsoft
           </Button>
 
           <p className="login-footer">

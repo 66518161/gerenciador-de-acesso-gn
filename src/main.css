@@ -627,33 +627,25 @@ select option {
   height: 1px;
   background: var(--hairline);
 }
-.google-button {
+.microsoft-button {
   width: 100%;
   min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   border-color: var(--hairline) !important;
   border-radius: 12px !important;
   color: var(--text-secondary) !important;
   background: var(--surface-subtle) !important;
 }
-.google-button:hover {
+.microsoft-button:hover {
   color: var(--text-primary) !important;
   background: var(--surface-hover) !important;
 }
-.google-g {
-  font-family: Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 800;
-  background: conic-gradient(
-    from -45deg,
-    #4285f4 0 25%,
-    #34a853 0 40%,
-    #fbbc05 0 65%,
-    #ea4335 0 83%,
-    #4285f4 0
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+.microsoft-logo {
+  flex-shrink: 0;
+  display: block;
 }
 .login-footer {
   margin-top: 21px;
